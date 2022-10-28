@@ -13,7 +13,7 @@
       </b-row>
       <b-row>
         <b-col>
-         <span class="h1">Pablo Mall</span>
+         <span class="h1" v-if="user">{{ user.name }} {{ user.lastname_f}}</span>
         <hr >
         </b-col>
       </b-row>
@@ -36,9 +36,12 @@
 
 <script>
 // @ is an alias to /src
-
+import { mapState } from 'vuex'
 export default {
   name: 'HomeView',
+  computed:{
+    ...mapState('usuario', ['isAuth', 'menu', 'user'])
+  },
   components: {
   }
 }
