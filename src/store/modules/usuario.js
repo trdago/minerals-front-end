@@ -2,7 +2,7 @@
 import axios from 'axios'
 import route from '../../router'
 const state = {
-    isAuth: true,
+    isAuth: false,
     user: null,
     token: null,
     menu: [{
@@ -254,11 +254,14 @@ const actions = {
 
     async login(state, payload) 
     {   
+        let loading = payload.loading.show()
+        
         try {
+
             
             const { data } = await axios.post('auth/login', payload)
 
-
+            if(!data.ok) throw { message: 'usuario o contraseña incorrecto'}
             data.menu =  [{
                 text: 'Cotizaciones',
                 icon: 'calendar4',
@@ -466,12 +469,17 @@ const actions = {
             }
         ]
 
+
+            payload.toast.success("Bienvenido")
             state.commit('SET_LOGIN', data)   
             await route.push({name: 'home'})
-            state.commit('SET_AUTH', true)   
+            state.commit('SET_AUTH', true) 
+            loading.hide() 
             
             
         } catch (error) {
+            payload.toast.error("Usuario o contraseña incorrecto")
+            loading.hide()
             state.commit('SET_AUTH', false)   
             console.error('Error al hacer login:: ', error)
         }

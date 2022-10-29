@@ -44,5 +44,10 @@ export default {
   },
   components: {
   }
+  ,data(){
+    return {
+      toastCount: 0
+    }
+  }
 }
 </script>

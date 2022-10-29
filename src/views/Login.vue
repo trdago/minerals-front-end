@@ -65,26 +65,28 @@
 import {mapActions} from 'vuex'
 export default {
   name: 'LoginView',
+  mounted()
+  {
+  
+      
+  },
   data() {
     return {
+      
         form: {
           username: null,
-          password: null
+          password: null,
+          loading: this.$loading,
+          toast: this.$toast
         },
     }
   },
   methods:{
     ...mapActions('usuario', ['login'])
-
-
   }
 }
 </script>
 <style scoped>
-
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300);
-
-
 
 .legend {
   font-family: 'Open Sans', sans-serif !important;

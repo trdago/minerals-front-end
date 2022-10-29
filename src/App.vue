@@ -8,8 +8,8 @@
 </template>
 
 <style>
-
-  @import 'assets/custom-vars.scss';
+/* 
+ @import 'assets/custom-vars.scss';  */
 
 </style>
 
@@ -23,5 +23,11 @@ export default {
       Headers,
       Footer
   }
+  ,mounted()
+  {
+    
+  }
+  
+  
 }
 </script>
