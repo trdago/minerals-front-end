@@ -20,11 +20,13 @@
                           Salir
                       </b-button>
                       <b-button class="m" style="font-weight: normal" v-b-tooltip.hover variant="link" title="Ver Mi Perfil">
-                         Ayuda <span style="font-size: 1rem;"><b-icon icon="question-circle-fill"></b-icon></span> administrador
+                         Ayuda <span style="font-size: 1rem;"><b-icon icon="question-circle-fill"></b-icon></span>
+                          {{ user.perfil.nombre }}
                       </b-button>
                     </b-col>
                   </b-row>
                   <b-row class="mt-3">
+            
                     <b-col sm="12" class="ml-auto">
                       <b-dropdown size="sm" v-for="(m , i) in menu" :key="i"  variant="darwin">
                         <template #button-content>
@@ -66,6 +68,7 @@ export default {
 </script>
 
 <style scoped>
+
 .m{
    text-decoration: none;
    color:#ffff;

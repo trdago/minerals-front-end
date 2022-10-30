@@ -8,8 +8,8 @@
 </template>
 
 <style>
-/* 
- @import 'assets/custom-vars.scss';  */
+
+ @import 'assets/custom-vars.scss';
 
 </style>
 
