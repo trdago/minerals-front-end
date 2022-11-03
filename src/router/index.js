@@ -25,9 +25,8 @@ const routes = [
     path: '/home',
     name: 'home',
     component: HomeView,
-    meta: {
-      middleware: [auth],
-    },
+    beforeEnter: auth,
+
   },
   {
     path: '/unautorized',

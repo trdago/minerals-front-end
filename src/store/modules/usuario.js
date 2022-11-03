@@ -229,7 +229,8 @@ const state = {
 }
 
 const getters = {
-    token: state => state.token
+    token: state => state.token,
+    isAuth: state => state.isAuth,
 }
 
 const mutations = { 

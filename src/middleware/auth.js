@@ -1,12 +1,16 @@
-export default function auth(to, from, next) 
-{
-  /* 
-    if (!localStorage.getItem('jwt')) {
-      return router.push({ name: 'login' });
-    }
-  */
+import store from './../store/index'
 
-    console.log('Paso por el midleware', to, from)
+
+export default async function auth(to, from, next) 
+{ 
+
+    if(await store.getters['usuario/isAuth'])
+    {
+
+        return next()
+    }
+
+
+    return next({name: 'logout'})
   
-    return next()
 }
