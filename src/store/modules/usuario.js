@@ -12,7 +12,7 @@ const state = {
 
             {
                 text: 'Listar Cotizaciones',
-                url: '/quotations/index/quotation_validity%3A1/active%3A1'
+                url: '/quotations/index/quotation_validity/active'
 
             },
             {
@@ -228,6 +228,10 @@ const state = {
     ]
 }
 
+const getters = {
+    token: state => state.token
+}
+
 const mutations = { 
     SET_LOGIN(state, payload) 
     { 
@@ -269,7 +273,7 @@ const actions = {
     
                     {
                         text: 'Listar Cotizaciones',
-                        url: '/quotations/index/quotation_validity%3A1/active%3A1'
+                        url: '/quotations/index/quotation_validity/active'
     
                     },
                     {
@@ -494,5 +498,6 @@ export default {
     namespaced: true, 
     state,
     mutations,
-    actions
+    actions,
+    getters
 }

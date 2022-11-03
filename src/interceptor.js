@@ -1,5 +1,6 @@
 import axios from 'axios'
-import router from './router'  
+import router from './router' 
+import store from './store/index'
 
 axios.defaults.baseURL = process.env.VUE_APP_API_BACKEND
 
@@ -15,13 +16,14 @@ axios.interceptors.request.use(async function(config) {
      
         return config
     }
-    /*
-    
+
+    let auth_token = store.getters['usuario/token']
+
     if(auth_token)
     {
-        config['headers']["Authorization"] = `Bearer ${auth_token}` 
+        config['headers']["Authorization"] = `${auth_token}` 
 
-    }*/
+    }
  
     return config
 

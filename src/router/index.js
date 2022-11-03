@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../views/Login.vue'
 import HomeView from '../views/HomeView'
+import CotizacionesView from '../views/cotizaciones/Index'
 
 Vue.use(VueRouter)
 
@@ -20,6 +21,11 @@ const routes = [
     path: '/unautorized',
     name: 'Unautorized',
     component: HomeView
+  },
+  {
+    path: '/quotations/index/quotation_validity/active',
+    name: 'cotizaciones',
+    component: CotizacionesView
   },
   {
     path: '/about',

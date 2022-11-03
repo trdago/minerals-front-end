@@ -12,6 +12,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import VueLoading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
+import 'vue-search-select/dist/VueSearchSelect.css'
 
 
 Vue.config.productionTip = false
