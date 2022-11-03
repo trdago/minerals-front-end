@@ -13,16 +13,28 @@
         <b-col sm="6">
             
           <b-list-group horizontal>
-              <b-list-group-item class="text-small text-center" :to="{name: 'cotizaciones'}" active><small>Lista de Cotizaciones</small></b-list-group-item>
-              <b-list-group-item class="text-small text-center"  href="#" ><small>Nueva Cotización</small></b-list-group-item>
-              <b-list-group-item class="text-small text-center"  href="#"><small>Aprobar Cotización</small></b-list-group-item>
-              <b-list-group-item class="text-small text-center"  href="#foobar"><small>Cotizaciones por Vencer</small></b-list-group-item>
+              <b-list-group-item 
+                @click="seccion ='Lista de Cotizaciones'" 
+                active-class="active"
+                class="text-small text-center" 
+                :to="{name: 'cotizaciones'}">
+                  <small>Lista de Cotizaciones</small>
+              </b-list-group-item>
+              <b-list-group-item 
+                @click="seccion='Nueva Cotización'" 
+                active-class="active" 
+                class="text-small text-center" 
+                :to="{name: 'cotizaciones_new'}" >
+                  <small>Nueva Cotización</small>
+              </b-list-group-item>
+              <b-list-group-item active-class="active" class="text-small text-center"  href="#"><small>Aprobar Cotización</small></b-list-group-item>
+              <b-list-group-item active-class="active" class="text-small text-center"  href="#foobar"><small>Cotizaciones por Vencer</small></b-list-group-item>
           </b-list-group>
         </b-col>
       </b-row>
       <b-row>
         <b-col>
-         <span class="h1">Lista de Cotizaciones</span>
+         <span class="h1">{{ seccion }}</span>
         </b-col>
         <b-col class="text-end">
           <b-button variant="link">
@@ -37,16 +49,11 @@
         <hr>
       </b-row>
       <b-row>
-        <table-component></table-component>
+         <router-view/>
 
       </b-row>
 
       </b-container>
-
-
-  
-
-    
     </b-container>
 
 
@@ -60,18 +67,14 @@
 <script>
 // @ is an alias to /src
 import { mapState } from 'vuex'
-import TableComponent from './../../components/Table.vue'
 export default {
   name: 'CotizacionesView',
   computed:{
     ...mapState('usuario', ['isAuth', 'menu', 'user'])
-  },
-  components: {
-    TableComponent
   }
   ,data(){
     return {
-      toastCount: 0
+      seccion: '',
     }
   }
 }

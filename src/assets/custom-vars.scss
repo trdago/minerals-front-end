@@ -148,6 +148,11 @@ $bd-gray: #808080;
     --bs-btn-disabled-border-color: #0d6efd;
 }
 
+.text-darwin {
+    --bs-text-opacity: 1 !important;
+    color: #9c5947!important;
+}
+
 .btn-link {
     --bs-btn-color: #9c5947!important;
     --bs-btn-hover-color: #7c4739 !important;
@@ -166,9 +171,6 @@ $bd-gray: #808080;
     text-decoration: underline;
 }
 
-.dropdown-menu {
-    margin-top: 35px!important;
-}
 
 @font-face {
     font-family: "BebasNeueRegular";

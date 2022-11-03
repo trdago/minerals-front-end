@@ -35,7 +35,7 @@
         </b-row>
         <b-row>
                 <b-table
-    :items="items"
+    :items="cotizaciones"
     :fields="fields"
     :per-page="perPage"
     :filter="filter"
@@ -52,7 +52,7 @@
                 <td v-for="field in fields" :key="field.key">  
                 <!-- {{ field.key }} -->
                             <!-- @change="changeRegion()" -->
-                    <b-input-group v-if="field.is_select == 'interno_plazo' && field.fil">
+                    <b-input-group v-if="field.is_select == 'quotation_state' && field.fil">
                             <!-- :isDisabled="field.active" -->
                         <model-select 
                             size="sm"  
@@ -62,7 +62,7 @@
                         </model-select>  
                     </b-input-group>
                 
-                    <b-input-group v-if="field.is_select == 'cotizacion' && field.fil">
+                    <b-input-group v-if="field.is_select == 'quotation_number' && field.fil">
                         <model-select 
                             size="sm"  
                             :options="comunas"
@@ -70,7 +70,7 @@
                             placeholder="creador">
                         </model-select>  
                     </b-input-group>
-                    <b-input-group v-if="field.is_select == 'cliente' && field.fil">
+                    <b-input-group v-if="field.is_select == 'company_name' && field.fil">
                         <b-form-input  
                             @keyup.enter="enter_Filter(field, filters[field.key], true)"  
                             size="sm" 
@@ -95,7 +95,7 @@
                         </b-input-group-append>
                     </b-input-group>
 
-                    <b-input-group v-if="field.is_select == 'estado' && field.fil">
+                    <b-input-group v-if="field.is_select == 'state_id' && field.fil">
                         <model-select 
                             size="sm"  
                             :options="estados"
@@ -104,7 +104,7 @@
                         </model-select>  
                     </b-input-group>
 
-                    <b-input-group v-if="field.is_select == 'vigencia' && field.fil">
+                    <b-input-group v-if="field.is_select == 'active' && field.fil">
                         <model-select 
                             size="sm"  
                             :options="vigencias"
@@ -113,7 +113,7 @@
                         </model-select>  
                     </b-input-group>
 
-                    <b-input-group v-if="field.is_select == 'expiracion' && field.fil">
+                    <b-input-group v-if="field.is_select == 'expiration_date' && field.fil">
                         <model-select 
                             size="sm"  
                             :options="activas"
@@ -125,43 +125,70 @@
                 </td>
             </template>
 
-             <template #cell(adjunto)="row">  
-                     <b-button @click="downloadAdjunto(row)" v-if="row.item.is_adjunto"  variant="link"  title="Adjunto">
-                        <b-icon  font-scale="2" icon="cloud-download-fill" aria-hidden="true"></b-icon>
-                    </b-button>  
-
-                     <b-button disabled v-if="!row.item.is_adjunto"  variant="link"  title="Adjunto">
-                        <b-icon font-scale="2" icon="cloud" aria-hidden="true"></b-icon>
-                    </b-button> 
+             <template #cell(quotation_state)="row">  
+                   <b-badge v-if="row.item.quotation_state == 'Pendiente'" class="bg-secondary" variant="info">{{ row.item.quotation_state }}</b-badge>  
              </template>
+             <template #cell(quotation_number)="row">  
+                 <b-row>
+                 <span> {{ row.item.quotation_number }}</span>
+                 </b-row>
+                 <b-row>
+                   <b-badge class="text-darwin">
+                       <small>
+                           <b-icon icon="person-fill"></b-icon>
+                           {{ row.item.user_creator }}
+                           </small>
+                       </b-badge>  
 
-             <template #cell(detalle)="row">
-                <b-button variant="primary" size="sm" @click="row.toggleDetails" class="mr-2">
-                        <b-icon  icon="eye" aria-hidden="true"></b-icon>
+                 </b-row>
                  
-                </b-button>
              </template>
+             <template #cell(company_name)="row">   
+                 <span class="text-darwin">
+                           {{ row.item.company_name }}
+                 </span>
+             </template>
+             <template #cell(project)="row">   
+                 <span class="text-darwin">
+                           {{ row.item.project }}
+                 </span>
+             </template>
+             <template #cell(start_date)="row">   
+                 <span class="text-darwin">
+                           {{ row.item.start_date }}
+                 </span>
+             </template>
+             <template #cell(expiration_date)="row">   
+                 <span class="text-darwin">
+                           {{ row.item.expiration_date }}
+                 </span>
+             </template>
+             <template #cell(active)="row">   
+                   <b-badge v-if="row.item.active == 0" class="bg-danger" >No Vigente</b-badge>  
+                   <b-badge v-if="row.item.active == 1" class="bg-success" >Vigente</b-badge>  
+               
+             </template>
+             <template #cell(state_id)="row">   
+                   <b-badge v-if="row.item.state_id == 1" class="bg-warning">Pendiente</b-badge>  
+                   <b-badge v-if="row.item.state_id == 2" class="bg-success">Aprobada</b-badge>  
+                   <b-badge v-if="row.item.state_id == 3" class="bg-danger">Rechazada</b-badge>  
+                   <b-badge v-if="row.item.state_id == 4" class="bg-seondary">Anulada</b-badge>  
+               
+             </template>
+             <template #cell(acciones)="">   
+                <b-button-group size="sm">
+                    <b-button >ver</b-button>
+                    <b-dropdown size="sm" variant="secondary">
+                    <template #button-content>
+                        <span class="sr-only">Opciones</span>
+                    </template> 
+                    <b-dropdown-item  href="">opcion</b-dropdown-item>
+                    <b-dropdown-item  href="">opcion</b-dropdown-item>
+                    <b-dropdown-item  href="">opcion</b-dropdown-item> 
 
-            <template #row-details="row">
-                <b-card> 
-
-                    <b-row>
-                        <b-col sm="2">Teléfono</b-col>
-                        <b-col>: {{ row.item.telefono }}</b-col>
-                    </b-row>
-
-                    <b-row>
-                        <b-col  sm="2">Comentario</b-col>
-                        <b-col>: {{ row.item.descripcion }} </b-col>
-                    </b-row>
-                    
-                    <b-row>
-                        <b-col sm="3"></b-col>
-                        <b-col class="text-right"><small>{{ row.item.created_at }}</small></b-col>
-                    </b-row>
- 
-                </b-card>
-            </template>
+                    </b-dropdown>
+                </b-button-group>
+             </template>
 
             <template #empty>
                 <div class="text-center my-2"> 
@@ -187,6 +214,7 @@
         width: 180px !important;
     }
 
+
 </style>
 
 <script>
@@ -198,7 +226,7 @@ export default {
   name: 'TableComponent',
 
    computed:{
-    ...mapState('usuario', ['isAuth', 'user'])
+    ...mapState('cotizaciones', ['total', 'cotizaciones'])
   },
   methods: {
         ...mapActions('cotizaciones', ['searchFilter']),
@@ -228,7 +256,7 @@ export default {
             payload.tipo = 'filtros'
             payload.limit = 20
             payload.offset = 0
-            payload.active = 2
+            payload.active = "2"
             payload.cliente= "ASMIN"
             payload.state_id= 2            
             payload.quotation_state_id= 5     
@@ -280,15 +308,15 @@ export default {
         loading : false, 
         isBusy: false,
         fields: [
-            {  is_select: 'interno_plazo', active: false, fil: true, key: 'interno_plazo', label: 'Interno Plazo', class: 'text-center' },
-            {  is_select: 'cotizacion', thClass:'cl_100', active: false, fil: true, key: 'cotizacion', label: 'Cotizacion'},
-            {  is_select: 'cliente', active: false, fil: true, key: 'cliente', label: 'Cliente' },
-            {  is_select: false, active: false, fil: true, key: 'proyecto', label: 'Proyecto'  },
-            {  is_select: false, active: false, fil: false, key: 'inicio', label: 'Inicio'  },
-            {  is_select: 'expiracion', active: false, fil: true,  key: 'expiracion', label:'Expiracion'},
-            {  is_select: 'vigencia', active: false, fil: true, key: 'vigencia',  label:'Vigencia'},
-            {  is_select: 'estado', active: false, fil: true, key: 'estado',  label:'Estado'},
-            {  is_select: false, active: false, fil: false, key: 'acciones',  label:'Acciones'}
+            {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Interno Plazo', class: 'text-center' },
+            {  is_select: 'quotation_number', active: false, fil: true, key: 'quotation_number', label: 'Cotizacion', class: 'text-center'},
+            {  is_select: 'company_name', active: false, fil: true, key: 'company_name', label: 'Cliente', class: 'text-center'},
+            {  is_select: false, active: false, fil: true, key: 'project', label: 'Proyecto' , class: 'text-center'},
+            {  is_select: false, active: false, fil: false, key: 'start_date', label: 'Inicio' , class: 'text-center'},
+            {  is_select: 'expiration_date', active: false, fil: true,  key: 'expiration_date', label:'Expiracion', class: 'text-center'},
+            {  is_select: 'active', active: false, fil: true, key: 'active',  label:'Vigencia', class: 'text-center'},
+            {  is_select: 'state_id', active: false, fil: true, key: 'state_id',  label:'Estado', class: 'text-center'},
+            {  is_select: false, active: false, fil: false, key: 'acciones',  label:'Acciones', class: 'text-center'}
         ],
         items: [ ],
         totalRows: 0,
