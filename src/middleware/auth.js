@@ -10,7 +10,7 @@ export default async function auth(to, from, next)
         return next()
     }
 
+    return next({name: 'logout'}) 
 
-    return next({name: 'logout'})
   
 }

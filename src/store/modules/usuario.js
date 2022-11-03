@@ -491,9 +491,9 @@ const actions = {
 
 
             payload.toast.success("Bienvenido")
-            state.commit('SET_LOGIN', data)   
+            await state.commit('SET_LOGIN', data)   
+            await state.commit('SET_AUTH', true) 
             await route.push({name: 'home'})
-            state.commit('SET_AUTH', true) 
             loading.hide() 
             
             
