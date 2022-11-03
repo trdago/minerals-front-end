@@ -15,7 +15,13 @@
                           <b-icon icon="person-fill"></b-icon>
                           <span v-if="user">{{ user.name }} {{ user.lastname_f}}</span>
                       </b-button>
-                      <b-button class="m" v-b-tooltip.hover style="font-size: 1rem;" variant="link" title="Ver Mi Perfil">
+                      <b-button 
+                        :to="{name: 'logout'}"
+                        class="m" 
+                        v-b-tooltip.hover 
+                        style="font-size: 1rem;" 
+                        variant="link" 
+                        title="Ver Mi Perfil">
                           <b-icon icon="power"></b-icon>
                           Salir
                       </b-button>

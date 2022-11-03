@@ -250,11 +250,26 @@ const mutations = {
             state.token = null
         }
         
+    },
+    CLEAR_SESSION(state)
+    {
+
+        state.user = null
+        state.isAuth = false
     }
 
 }
 
 const actions = {
+
+    async clearSession({commit}, payload)
+    {
+
+        console.log('limpiar session', payload)
+
+        commit('CLEAR_SESSION')
+
+    },
 
     async login(state, payload) 
     {   

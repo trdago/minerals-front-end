@@ -208,16 +208,15 @@ export default {
             console.log('search filters::...', this.filters)
 
             /*  
-            "offset":0,
-            "limit":20, 
-            "cliente":"ASMIN",
-            "state_id":2,
-            "quotation_state_id":5,
-            "creador":null
-              "active":"1",
-  "tipo":"cotizaciones", 
-  "offset":0,
-  "limit":20
+              "active":"2",// 0=INACTIVOS, 1=ACTIVOS 2=TODOS
+                "tipo":"filtros", 
+                "offset":0,
+                "limit":20, 
+                "cliente":"ASMIN",
+                "state_id":2,
+                "quotation_state_id":5,
+                "creador":null
+
             */
 
            console.log('filters:: ', this.filters)
@@ -226,10 +225,14 @@ export default {
 
             payload.loading = this.$loading
             payload.toast = this.$toast
-            payload.tipo = 'cotizaciones'
+            payload.tipo = 'filtros'
             payload.limit = 20
             payload.offset = 0
-            payload.active = 1
+            payload.active = 2
+            payload.cliente= "ASMIN"
+            payload.state_id= 2            
+            payload.quotation_state_id= 5     
+            payload.todas = "no"      
             //payload.cliente = this.filters['cliente']
 
             await this.searchFilter(payload)
