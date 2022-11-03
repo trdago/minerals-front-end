@@ -18,8 +18,7 @@ const routes = [
   {
     path: '/logout',
     name: 'logout',
-    beforeEnter: logout,
-    component: Login
+    beforeEnter: logout
   },
   {
     path: '/home',
