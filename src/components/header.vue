@@ -72,6 +72,8 @@ export default {
 
 <style scoped>
 
+
+
 .top {
   margin-top: -65px;
 }

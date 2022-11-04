@@ -2,14 +2,20 @@
 import axios from 'axios'
 const state = {
     cotizaciones: [],
-    total: 0,
+    totalRows: 0,
+    pageOptions: [
+        {value: 5, text: '5'},
+        {value: 10, text: '10'},
+        {value: 20, text: '20'},
+        {value: 50, text: '50'},
+    ],
 }
 
 const mutations = { 
 
     SET_COTIZACIONES(state, payload)
     {
-        state.total = payload.total_registros
+        state.totalRows = payload.total_registros
         state.cotizaciones = payload.data
     }
 

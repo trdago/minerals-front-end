@@ -17,7 +17,7 @@
                     id="per-page-select"
                     :options="pageOptions"
                     size="sm"
-                    v-model="perPage"
+                    v-model="porPagina"
                     placeholder="select item">
                 </model-select> 
                 </b-form-group>
@@ -35,25 +35,23 @@
         </b-row>
         <b-row>
                 <b-table
-    :items="cotizaciones"
-    :fields="fields"
-    :per-page="perPage"
-    :filter="filter"
-    :filter-included-fields="filterOn"
-    stacked="md"
-    :busy="isBusy"
-    show-empty
-    small
-    :outlined="true"
-    :bordered="true"
-    > 
+                striped="striped"
+                :items="cotizaciones"
+                :fields="fields"
+                :per-page="porPagina"
+                :filter="filter"
+                :filter-included-fields="filterOn"
+                stacked="md"
+                :busy="isBusy"
+                show-empty
+                small
+                :outlined="true"
+                :bordered="true"
+                > 
 
               <template slot="top-row" slot-scope="{ fields }">
-                <td v-for="field in fields" :key="field.key">  
-                <!-- {{ field.key }} -->
-                            <!-- @change="changeRegion()" -->
+                <td v-for="field in fields" :key="field.key">   
                     <b-input-group v-if="field.is_select == 'quotation_state' && field.fil">
-                            <!-- :isDisabled="field.active" -->
                         <model-select 
                             size="sm"  
                             :options="internos"
@@ -63,16 +61,8 @@
                     </b-input-group>
                 
                     <b-input-group v-if="field.is_select == 'quotation_number' && field.fil">
-                        <model-select 
-                            size="sm"  
-                            :options="comunas"
-                            v-model="filters[field.key]"
-                            placeholder="creador">
-                        </model-select>  
-                    </b-input-group>
-                    <b-input-group v-if="field.is_select == 'company_name' && field.fil">
                         <b-form-input  
-                            @keyup.enter="enter_Filter(field, filters[field.key], true)"  
+                            @keyup.enter="search()"  
                             size="sm" 
                             :disabled="field.active" 
                             v-model="filters[field.key]">
@@ -81,14 +71,38 @@
                         <b-button 
                             size="sm" 
                             v-if="!field.active" 
-                            @click="enter_Filter(field, filters[field.key], true)" 
+                            @click="search()" 
                             variant="pdarwin">
                             <b-icon icon="search"></b-icon>
                         </b-button>
                         <b-button 
                             size="sm" 
                             v-if="field.active"
-                             @click="enter_Filter_Clear(field, filters[field.key])" 
+                             @click="search()" 
+                             variant="danger">
+                            <b-icon icon="x"></b-icon>
+                        </b-button>
+                        </b-input-group-append>
+                    </b-input-group>
+                    <b-input-group v-if="field.is_select == 'company_name' && field.fil">
+                        <b-form-input  
+                            @keyup.enter="search()"  
+                            size="sm" 
+                            :disabled="field.active" 
+                            v-model="filters[field.key]">
+                        </b-form-input>
+                        <b-input-group-append> 
+                        <b-button 
+                            size="sm" 
+                            v-if="!field.active" 
+                            @click="search()" 
+                            variant="pdarwin">
+                            <b-icon icon="search"></b-icon>
+                        </b-button>
+                        <b-button 
+                            size="sm" 
+                            v-if="field.active"
+                             @click="search()" 
                              variant="danger">
                             <b-icon icon="x"></b-icon>
                         </b-button>
@@ -127,6 +141,10 @@
 
              <template #cell(quotation_state)="row">  
                    <b-badge v-if="row.item.quotation_state == 'Pendiente'" class="bg-secondary" variant="info">{{ row.item.quotation_state }}</b-badge>  
+                   <b-badge v-if="row.item.quotation_state == 'Por adjudicar'" class="bg-primary" variant="info">{{ row.item.quotation_state }}</b-badge>  
+                   <b-badge v-if="row.item.quotation_state == 'Ganada'" class="bg-success" variant="info">{{ row.item.quotation_state }}</b-badge>  
+                   <b-badge v-if="row.item.quotation_state == 'Perdida'" class="bg-danger" variant="info">{{ row.item.quotation_state }}</b-badge>  
+                   <b-badge v-if="row.item.quotation_state == 'Negociación'" class="bg-warning" variant="info">{{ row.item.quotation_state }}</b-badge>  
              </template>
              <template #cell(quotation_number)="row">  
                  <b-row>
@@ -182,9 +200,13 @@
                     <template #button-content>
                         <span class="sr-only">Opciones</span>
                     </template> 
-                    <b-dropdown-item  href="">opcion</b-dropdown-item>
-                    <b-dropdown-item  href="">opcion</b-dropdown-item>
-                    <b-dropdown-item  href="">opcion</b-dropdown-item> 
+                    <b-dropdown-item  href="">Nueva versión</b-dropdown-item>
+                    <b-dropdown-item  href="">Ver historial</b-dropdown-item>
+                    <b-dropdown-item  href="">Descargar PDF</b-dropdown-item> 
+                    <b-dropdown-item  href="">Descargar WORD</b-dropdown-item> 
+                    <b-dropdown-item  href="">Anular</b-dropdown-item> 
+                    <b-dropdown-item  href="">Editar estado interno</b-dropdown-item> 
+                    <b-dropdown-item  href="">Adjuntar</b-dropdown-item> 
 
                     </b-dropdown>
                 </b-button-group>
@@ -203,6 +225,18 @@
             </template>
         </b-table>
         </b-row>
+        <b-row class="mb-4">
+            <b-col cols="4">
+                <b-pagination
+                v-model="currentPage"
+                :total-rows="totalRows"
+                :per-page="porPagina"
+                align="fill"
+                size="sm"
+                class="my-0"
+                ></b-pagination>
+            </b-col>
+        </b-row>
 
 </div>
 </template>
@@ -214,7 +248,6 @@
         width: 180px !important;
     }
 
-
 </style>
 
 <script>
@@ -223,54 +256,58 @@ import { mapState, mapActions } from 'vuex'
 import { ModelSelect } from 'vue-search-select'
 
 export default {
-  name: 'TableComponent',
-
-   computed:{
-    ...mapState('cotizaciones', ['total', 'cotizaciones'])
-  },
-  methods: {
+    name: 'TableComponent',
+    computed:{
+    ...mapState('cotizaciones', [
+        'totalRows',  
+        'cotizaciones', 
+        'pageOptions'
+        ])
+    },
+    watch: {
+        'porPagina' : async function()
+        {  
+            await this.search()
+        },
+        'currentPage' : async function()
+        {  
+            await this.search()
+        },
+    },
+    mounted()
+    {
+        this.filters['active'] = 2
+    },
+    methods: {
         ...mapActions('cotizaciones', ['searchFilter']),
         async search()
         {
 
-            console.log('search filters::...', this.filters)
-
-            /*  
-              "active":"2",// 0=INACTIVOS, 1=ACTIVOS 2=TODOS
-                "tipo":"filtros", 
-                "offset":0,
-                "limit":20, 
-                "cliente":"ASMIN",
-                "state_id":2,
-                "quotation_state_id":5,
-                "creador":null
-
-            */
-
-           console.log('filters:: ', this.filters)
-
             const payload = {}
+            console.log(this.filters)
 
             payload.loading = this.$loading
             payload.toast = this.$toast
             payload.tipo = 'filtros'
-            payload.limit = 20
-            payload.offset = 0
-            payload.active = "2"
-            payload.cliente= "ASMIN"
-            payload.state_id= 2            
-            payload.quotation_state_id= 5     
-            payload.todas = "no"      
+            payload.limit = this.porPagina
+            payload.offset =  this.porPagina * (this.currentPage - 1)
+            payload.cliente= this.filters['company_name']
+            payload.quotation_state_id= this.filters['quotation_state']
+            payload.state_id= this.filters['state_id']
+            // payload.creador=  this.filters['quotation_number']
+            payload.active =String(this.filters['active'])  
+            payload.todas = "no"     
+            
+            console.log('pay:: ', payload)
             //payload.cliente = this.filters['cliente']
 
             await this.searchFilter(payload)
-
-
-
         }
   },
   data: function(){
       return {
+          currentPage:1,
+          porPagina: 5,
           cliente: null,
           activas:[
               { value: 2, text: 'Todas'},
@@ -278,28 +315,25 @@ export default {
               { value: 1, text: 'Si'},
           ],
           estados:[
-              { value: 'all', text: 'Todos los estados'},
-              { value: 'pendiente', text: 'Pendiente'},
-              { value: 'aprobada', text: 'Aprobada'},
-              { value: 'rechazada', text: 'rechazada'},
-              { value: 'anulado', text: 'Anulado'},
+              { value: 0, text: 'Todos los estados'},
+              { value: 1, text: 'Pendiente'},
+              { value: 2, text: 'Aprobada'},
+              { value: 3, text: 'Rechazada'},
+              { value: 3, text: 'Anulado'},
           ],
           vigencias:[
-              { value: 'all', text: 'Todas las vigencias'},
-              { value: 'si', text: 'Vigencia'},
-              { value: 'no', text: 'No vigencia'},
+              { value: 2, text: 'Todas las vigencias'},
+              { value: 1, text: 'Vigencia'},
+              { value: 0, text: 'No vigencia'},
           ],
           internos:[
-              { value: 'all', text: 'Todos los estados'},
-              { value: 'ganada', text: 'Ganada'},
-              { value: 'perdido', text: 'perdida'},
-              { value: 'por_adjudicar', text: 'Por adjudicar'},
-              { value: 'negociacion', text: 'Negociación'},
-              { value: 'pendiente', text: 'Pendiente'},
+              { value: 0, text: 'Todos los estados'},
+              { value: 1, text: 'Ganada'},
+              { value: 2, text: 'Perdida'},
+              { value: 3, text: 'Por adjudicar'},
+              { value: 4, text: 'Negociación'},
+              { value: 5, text: 'Pendiente'},
           ],
-
-        regiones: [],
-        comunas: [],
         filters: {
             id: '',
             issuedBy: '',
@@ -318,27 +352,8 @@ export default {
             {  is_select: 'state_id', active: false, fil: true, key: 'state_id',  label:'Estado', class: 'text-center'},
             {  is_select: false, active: false, fil: false, key: 'acciones',  label:'Acciones', class: 'text-center'}
         ],
-        items: [ ],
-        totalRows: 0,
-        currentPage: 1,
-        perPage: 5,
-        pageOptions: [
-            {value: 5, text: '5'},
-            {value: 10, text: '10'},
-            {value: 20, text: '20'},
-            {value: 50, text: '50'},
-        ],
-        sortBy: '',
-        sortDesc: false,
-        sortDirection: 'asc',
         filter: null,
-        filterOn: [],
-        infoModal: {
-          id: 'info-modal',
-          title: '',
-          content: ''
-        }
-         
+        filterOn: [],         
         }
   },
   components: {
