@@ -1,7 +1,7 @@
 <template>
     <div id="header">
 		<div class="container">
-            <b-navbar variant="faded" type="dark">
+            <b-navbar variant="faded"  class="mb-0 pb-0" type="dark">
                 <b-navbar-brand href="#">
                     <b-img width="171px" :src="require('../assets/img/logo.png')"></b-img>
                 </b-navbar-brand>
@@ -35,7 +35,7 @@
                 </b-navbar-nav>
 
             </b-navbar>
-                <b-row >
+            <b-row class="mt-0 pt-0" v-if="isAuth">
                     <b-col sm="12" class="ml-auto text-end">
                       <b-dropdown size="sm" v-for="(m , i) in menu" :key="i"  variant="darwin">
                         <template #button-content>
@@ -52,7 +52,7 @@
 
 
                     </b-col>
-                  </b-row> 
+              </b-row> 
            
         </div>
 	</div>

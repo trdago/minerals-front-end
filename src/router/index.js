@@ -2,10 +2,10 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../views/Login.vue'
 import HomeView from '../views/HomeView'
+import ConstruccionView from '../views/Construccion'
 import CotizacionListView from '../views/cotizaciones/List'
 import CotizacionesView from '../views/cotizaciones/Index'
 import CotizacionesNewView from '../views/cotizaciones/New'
-import ConstruccionView from '../views/Construccion'
 import CotizacionesAprobarView from '../views/cotizaciones/Aprobar'
 import CotizacionesVencerView from '../views/cotizaciones/Vencer'
 import auth from './../middleware/auth.js'
@@ -54,13 +54,13 @@ const routes = [
         beforeEnter: auth,
       },
       {
-        path: '/quotations/add',
+        path: '/quotations/pendingquotations',
         name: 'cotizaciones_new',
         component: CotizacionesAprobarView,
         beforeEnter: auth,
       },
       {
-        path: '/quotations/add',
+        path: '/quotations/pendingquotations',
         name: 'cotizaciones_new',
         component: CotizacionesVencerView,
         beforeEnter: auth,

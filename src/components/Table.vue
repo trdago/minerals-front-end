@@ -284,8 +284,6 @@ export default {
         {
 
             const payload = {}
-            console.log(this.filters)
-
             payload.loading = this.$loading
             payload.toast = this.$toast
             payload.tipo = 'filtros'
