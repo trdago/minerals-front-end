@@ -34,8 +34,9 @@ axios.interceptors.request.use(async function(config) {
 axios.interceptors.response.use(
     function (response) 
     { 
+        console.log('response:: ', response)
         
-        if(response.data.statusCode == 403) 
+        if(response.data?.statusCode == 403) 
             return router.push({path: '/unauthorized'}) 
         
         if(response.data.statusCode == 401)
@@ -51,7 +52,7 @@ axios.interceptors.response.use(
     function (error) 
     {   
 
-        if (error.request.status !== 401) 
+        if (error.request?.status !== 401) 
             return new Promise((resolve, reject) => reject(error))
 
         if ([401, 403].indexOf(error.request.status) !== -1) 
