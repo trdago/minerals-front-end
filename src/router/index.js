@@ -5,6 +5,7 @@ import HomeView from '../views/HomeView'
 import ConstruccionView from '../views/Construccion'
 import CotizacionListView from '../views/cotizaciones/List'
 import CotizacionesView from '../views/cotizaciones/Index'
+import UploadView from '../views/icp/Upload'
 import CotizacionesNewView from '../views/cotizaciones/New'
 import CotizacionesAprobarView from '../views/cotizaciones/Aprobar'
 import CotizacionesVencerView from '../views/cotizaciones/Vencer'
@@ -28,13 +29,23 @@ const routes = [
     path: '/home',
     name: 'home',
     component: HomeView,
-    beforeEnter: auth,
 
   },
   {
     path: '/unautorized',
     name: 'Unautorized',
     component: HomeView
+  },
+  {
+    path: '/icp',
+    component: UploadView,
+    children: [
+      {
+        path: '/icp/upload',
+        name: 'icp.upload',
+        component: UploadView,
+      },
+    ]
   },
   {
     path: '/quotations',

@@ -4,12 +4,14 @@ import createPersistedState from 'vuex-persistedstate'
 import usuario from './modules/usuario'
 import cotizaciones from './modules/cotizaciones'
 import monedas from './modules/monedas'
+import icp from './modules/icp'
 
 
 const modules = {
   usuario,
   cotizaciones,
-  monedas
+  monedas,
+  icp
 }
 Vue.use(Vuex)
 
