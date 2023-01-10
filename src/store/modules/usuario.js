@@ -5,21 +5,7 @@ const state = {
     isAuth: false,
     user: null,
     token: null,
-    menu: [
-        {
-        text: 'icp',
-        icon: 'arrow-bar-up',
-        menu: [
-
-            {
-                text: 'Subir archivo',
-                url: '/icp/upload'
-
-            },
-           
-        ]
-    }
-]
+    menu: []
 ,
     perfiles:[
         {id:"2", nombre: "administrador"},
@@ -91,21 +77,7 @@ const actions = {
             const { data } = await axios.post('auth/login', payload)
 
             if(!data.ok) throw { message: 'usuario o contraseña incorrecto'}
-            data.menu =  [
-                {
-                text: 'icp',
-                icon: 'arrow-bar-up',
-                menu: [
-    
-                    {
-                        text: 'Subir archivo',
-                        url: '/icp/upload'
-    
-                    },
-                   
-                ]
-            }
-        ]
+  
 
 
             payload.toast.success("Bienvenido")

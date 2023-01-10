@@ -22,11 +22,11 @@
                         v-b-tooltip.hover 
                         style="font-size: 1rem;" 
                         variant="link" 
-                        title="Ver Mi Perfil">
+                        title="Salir del Sistema">
                           <b-icon icon="power"></b-icon>
                           Salir
                       </b-button>
-                      <b-button class="m" style="font-weight: normal" v-b-tooltip.hover variant="link" title="Ver Mi Perfil">
+                      <b-button class="m" style="font-weight: normal" v-b-tooltip.hover variant="link" title="Ver Ayuda">
                          Ayuda <span style="font-size: 1rem;"><b-icon icon="question-circle-fill"></b-icon></span>
                           {{ user.perfil.nombre }}
                       </b-button>
