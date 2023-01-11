@@ -282,7 +282,7 @@ export default {
         ...mapActions('cotizaciones', ['searchFilter']),
         async search()
         {
-
+            console.log("this.filter", this.filters);
             const payload = {}
             payload.loading = this.$loading
             payload.toast = this.$toast
@@ -294,6 +294,7 @@ export default {
             payload.state_id= this.filters['state_id']
             // payload.creador=  this.filters['quotation_number']
             payload.active =String(this.filters['active'])  
+            payload.quotation_number =String(this.filters['quotation_number'])  
             payload.todas = "no"     
             
             console.log('pay:: ', payload)
