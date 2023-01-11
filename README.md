@@ -1,5 +1,5 @@
 # minerals-front-end
-
+# node version 18.8.0
 ## Project setup
 ```
 npm install
