@@ -5,6 +5,8 @@ import store from './store'
 import './interceptor'
 import { BootstrapVue, IconsPlugin, BootstrapVueIcons} from 'bootstrap-vue'
 
+import Vue2Editor from "vue2-editor"
+
 //import 'bootstrap/dist/css/bootstrap.css'
 //import '@/assets/custom-vars.scss'
 import '@/assets/custom-vars.scss'
@@ -15,7 +17,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 import 'vue-search-select/dist/VueSearchSelect.css'
 
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false  
 
 
 
@@ -27,6 +29,7 @@ Vue.use(VueLoading,{
   container: null,
   canCancel: false
 })
+Vue.use(Vue2Editor)
 
 
 import Toast from "vue-toastification";

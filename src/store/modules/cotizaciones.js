@@ -2,6 +2,10 @@
 import axios from 'axios'
 const state = {
     cotizaciones: [],
+    form: {
+
+        
+    },
     totalRows: 0,
     pageOptions: [
         {value: 5, text: '5'},

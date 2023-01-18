@@ -66,13 +66,13 @@ const routes = [
       },
       {
         path: '/quotations/pendingquotations',
-        name: 'cotizaciones_new',
+        name: 'cotizaciones_pendiente',
         component: CotizacionesAprobarView,
         beforeEnter: auth,
       },
       {
         path: '/quotations/pendingquotations',
-        name: 'cotizaciones_new',
+        name: 'cotizaciones_por_vencer',
         component: CotizacionesVencerView,
         beforeEnter: auth,
       },

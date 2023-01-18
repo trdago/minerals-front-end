@@ -13,7 +13,7 @@
               description="Ingresa el nombre del cliente"
               label="Nombre del Cliente"
               label-for="input-1">
-              <b-form-input size="sm" id="input-1" v-model="name" :state="state" trim></b-form-input>
+              <b-form-input size="sm" id="input-1" v-model="form.nombre_cliente"   trim></b-form-input>
             </b-form-group>
           </b-col>
           <b-col>
@@ -22,7 +22,7 @@
             description="Run del cliente"
             label="Rut Cliente"
             label-for="input-1">
-            <b-form-input size="sm"  id="input-1" v-model="name" :state="state" trim></b-form-input>
+            <b-form-input size="sm"  id="input-1" v-model="form.run_cliente"  trim></b-form-input>
           </b-form-group>
 
           </b-col>
@@ -35,7 +35,7 @@
               description="Destinatario"
               label="Destinatario"
               label-for="input-1">
-              <b-form-input size="sm" id="input-1" v-model="name" :state="state" trim></b-form-input>
+              <b-form-input size="sm" id="input-1" v-model="form.destinatario"  trim></b-form-input>
             </b-form-group> 
           </b-col>
           <b-col>
@@ -44,7 +44,7 @@
             description="Nombre cliente"
             label="Nombre cliente"
             label-for="input-1">
-            <b-form-input size="sm" :disabled="true" id="input-1" v-model="name" :state="state" trim></b-form-input>
+            <b-form-input size="sm" :disabled="true" id="input-1" v-model="form.nombre_cliente_dos"   trim></b-form-input>
           </b-form-group>
 
           </b-col>
@@ -57,7 +57,7 @@
               description="N° Cotización"
               label="N° Cotización"
               label-for="input-1">
-              <b-form-input size="sm"  id="input-1" v-model="name" :state="state" trim></b-form-input>
+              <b-form-input size="sm"  id="input-1" v-model="form.n_cotizacion"   trim></b-form-input>
             </b-form-group>
           
 
@@ -68,7 +68,7 @@
             description="Estado cliente"
             label="Estado cliente"
             label-for="input-1">
-            <b-form-input size="sm" :disabled="true" id="input-1" v-model="name" :state="state" trim></b-form-input>
+            <b-form-input size="sm" :disabled="true" id="input-1" v-model="form.estado_cliente"   trim></b-form-input>
           </b-form-group> 
           </b-col>
         </b-row> 
@@ -126,13 +126,17 @@
         </b-row> 
         <b-row> 
           <b-col> 
+        
             <b-form-group 
               label-size="sm"
               description="Condiciones especificas"
               label="Condiciones especificas"
               label-for="input-1">
-              <VueEditor
-              :editorToolbar="customToolbar" />
+              <vue-editor
+              :editor-toolbar="customToolbar"
+               v-model="form.especificaciones"></vue-editor>
+             
+  
             </b-form-group>
 
           </b-col>
@@ -224,13 +228,13 @@
 // @ is an alias to /src
 import { mapState, mapActions } from 'vuex'
 import { ModelSelect } from 'vue-search-select'
-import { VueEditor } from "vue2-editor"
+import { VueEditor } from "vue2-editor";
 
 
 export default {
   name: 'CotizacionesNewView',
   computed:{
-    ...mapState('monedas', ['monedas'])
+    ...mapState('monedas', ['monedas']), 
   },
   components: {
       ModelSelect,
@@ -244,15 +248,15 @@ export default {
   },
   async mounted()
   {
-    await this.getAllMonedas(
-    {
-      loading: this.loading,
-      toast : this.$toast,
-      active: "1",
-      tipo: "monedas",
-      offset: 0,
-      limit: 100
-    })
+      // await this.getAllMonedas(
+      // {
+      //   loading: this.loading,
+      //   toast : this.$toast,
+      //   active: "1",
+      //   tipo: "monedas",
+      //   offset: 0,
+      //   limit: 100
+      // })
     this.loading.hide()
     console.log('mounted::', this.loading)
 
@@ -268,7 +272,8 @@ export default {
     return {
       loading: null,
       form: {
-        moneda: null
+        moneda: null,
+
       }
       ,customToolbar: [
         ["bold", "italic", "underline"],
