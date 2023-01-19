@@ -21,7 +21,7 @@ const actions = {
 
         try {
 
-            const { data } =  await axios.post('/api/herramientas/gettools', payload)
+            const { data } =  await axios.post('/api/herramientas/gettool', payload)
 
             if(!data.ok) throw { message: 'No se logro consultar las cotizaciones'}
             

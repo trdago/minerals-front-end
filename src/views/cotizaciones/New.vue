@@ -271,7 +271,11 @@ export default {
     console.log('mounted::', this.loading)
     const payload = {}
 
-    payload.tipo = 'compañía'
+
+    payload.loading = this.$loading
+    payload.toast = this.$toast
+
+    payload.tipo = 'compañías'
 
     payload.active= 1
     payload.offset= 1
