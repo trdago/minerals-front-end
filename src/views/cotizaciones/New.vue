@@ -15,7 +15,7 @@
               label-for="input-1">
               <model-select 
                   size="sm"  
-                  :options="[]"
+                  :options="clientes"
                   placeholder="Cliente">
               </model-select> 
             </b-form-group>
@@ -243,6 +243,8 @@ export default {
   name: 'CotizacionesNewView',
   computed:{
     ...mapState('monedas', ['monedas']), 
+    ...mapState('clientes', ['clientes']), 
+
   },
   components: {
       ModelSelect,
@@ -267,10 +269,23 @@ export default {
       // })
     this.loading.hide()
     console.log('mounted::', this.loading)
+    const payload = {}
+
+    payload.tipo = 'compañía'
+
+    payload.active= 1
+    payload.offset= 1
+    payload.limit= 1
+    payload.id= 0
+    payload.todas= 'si'
+
+    await this.getClientes(payload)
+
 
   },
   methods:{
     ...mapActions('monedas', ['getAllMonedas']),
+    ...mapActions('clientes', ['getClientes']), 
     async crear()
     {
       console.log('form:: ', this.form)

@@ -8,8 +8,7 @@ const mutations = {
 
     SET_CLIENTES(state, payload)
     {
-        state.totalRows = payload.total_registros
-        state.cotizaciones = payload.data
+        state.clientes = payload.data 
     }
 
 }
@@ -22,7 +21,7 @@ const actions = {
 
         try {
 
-            const { data } =  await axios.post('/api/quotations/filter', payload)
+            const { data } =  await axios.post('/api/herramientas/gettools', payload)
 
             if(!data.ok) throw { message: 'No se logro consultar las cotizaciones'}
             
