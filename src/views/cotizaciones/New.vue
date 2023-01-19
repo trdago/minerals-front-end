@@ -10,19 +10,26 @@
           <b-col>
             <b-form-group 
               label-size="sm"
-              description="Ingresa el nombre del cliente"
-              label="Nombre del Cliente"
+              description="Nombre cliente"
+              label="Seleccione cliente"
               label-for="input-1">
-              <b-form-input size="sm" id="input-1" v-model="form.nombre_cliente"   trim></b-form-input>
+              <model-select 
+                  size="sm"  
+                  :options="[]"
+                  placeholder="Cliente">
+              </model-select> 
             </b-form-group>
           </b-col>
-          <b-col>
+          <b-col> 
             <b-form-group 
+           
             label-size="sm"
             description="Run del cliente"
             label="Rut Cliente"
             label-for="input-1">
-            <b-form-input size="sm"  id="input-1" v-model="form.run_cliente"  trim></b-form-input>
+
+
+            <b-form-input   size="sm"  v-model="form.run_cliente"  trim></b-form-input> 
           </b-form-group>
 
           </b-col>
@@ -134,7 +141,8 @@
               label-for="input-1">
               <vue-editor
               :editor-toolbar="customToolbar"
-               v-model="form.especificaciones"></vue-editor>
+               v-model="form.especificaciones">
+              </vue-editor>
              
   
             </b-form-group>

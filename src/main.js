@@ -3,7 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './interceptor'
-import { BootstrapVue, IconsPlugin, BootstrapVueIcons} from 'bootstrap-vue'
+import { BootstrapVue, IconsPlugin, BootstrapVueIcons} from 'bootstrap-vue' 
+import vueRut from 'vue-rut'
 
 import Vue2Editor from "vue2-editor"
 
@@ -15,6 +16,9 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import VueLoading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import 'vue-search-select/dist/VueSearchSelect.css'
+
+
+Vue.use(vueRut)
 
 
 Vue.config.productionTip = false  
