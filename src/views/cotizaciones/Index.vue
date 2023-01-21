@@ -28,7 +28,12 @@
                   <small>Nueva Cotización</small>
               </b-list-group-item>
               <b-list-group-item active-class="active" class="text-small text-center"  href="#"><small>Aprobar Cotización</small></b-list-group-item>
-              <b-list-group-item active-class="active" class="text-small text-center"  href="#foobar"><small>Cotizaciones por Vencer</small></b-list-group-item>
+              <b-list-group-item 
+              active-class="active" 
+              class="text-small text-center"
+               @click="seccion='Cotizaciones por vencer'" 
+              :to="{name: 'cotizaciones_por_vencer'}"
+              ><small>Cotizaciones por Vencer</small></b-list-group-item>
           </b-list-group>
         </b-col>
       </b-row>

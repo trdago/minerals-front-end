@@ -49,7 +49,30 @@ const actions = {
             if(!data.ok) throw { message: 'No se logro  validar el cliente'}
 
             
+            payload.toast.success(`Cliente ${ data.data[0].name } existe en el sistema`)
+            loading.hide()
+            return data.data[0]
 
+        } catch (error) {
+            payload.toast.error("Error No se logro validar el cliente")
+            loading.hide()
+            console.error('Error No se logro validar el cliente: ', error) 
+        }
+    
+    },
+    async crearCliente(state, payload) 
+    {   
+        console.log('valida cliente', payload)
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } =  await axios.post('/api/herramientas/comprobar', payload)
+
+            if(!data.ok) throw { message: 'No se logro  validar el cliente'}
+
+            
+            payload.toast.success(`Cliente ${ data.data[0].name } existe en el sistema`)
             loading.hide()
             return data.data[0]
 

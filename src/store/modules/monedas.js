@@ -18,21 +18,25 @@ const actions = {
     async getAllMonedas({commit}, payload) 
     {   
 
+        console.log('monedas buscar payload::', payload)
+        let loading = payload.loading.show()
+
         try {
-            console.log('payload::', payload)
 
-            const { data } =  await axios.post('/api/gettool', payload)
+           const { data } = await axios.post('/api/herramientas/gettool', payload)
 
-            console.log('data:: ', data)
-            if(!data.ok) throw { message: 'No se logro consultar por las monedas'}
+
+           if(!data.ok) throw { message: 'No se logro obtener las monedas'}
+
+     
             
-            await commit('SET_MONEDAS', data)
+            await commit('SET_MONEDAS', data.data)
 
-            payload.loading.hide()
+            loading.hide()
         } catch (error) {
             console.error('Error al buscar los tipos de  monedas:: ', error) 
             payload.toast.error("Error al buscar las monedas")
-            payload.loading.hide()
+            loading.hide()
         }
      
 

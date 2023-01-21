@@ -2,6 +2,7 @@
 import axios from 'axios'
 const state = {
     cotizaciones: [],
+    condiciones: [],
     form: {
 
         
@@ -54,9 +55,20 @@ const actions = {
 
 
 
+const getters= { 
+    condicionesFormat: state => {
+
+        if(!state.condiciones) return []
+
+        return state.condiciones.map(item => ({ value: item.id, text: item.name }))
+    }
+}
+
+
 export default {
     namespaced: true, 
     state,
     mutations,
-    actions
+    actions,
+    getters
 }

@@ -43,13 +43,14 @@
         </b-row>
         <b-row>
           <b-col>
-            <b-form-group
-              label-size="sm"
-              description="Destinatario"
-              label="Destinatario"
-              label-for="input-1">
-              <b-form-input size="sm" id="input-1" v-model="form.destinatario"  trim></b-form-input>
-            </b-form-group> 
+              <b-form-group
+            label-size="sm"
+            description="Estado cliente"
+            label="Estado cliente"
+            label-for="input-1">
+            <b-form-input size="sm" :disabled="true" v-model="form.cliente_active.value"   trim></b-form-input>
+          </b-form-group> 
+          
           </b-col>
           <b-col>
             <b-form-group
@@ -65,7 +66,20 @@
 
         <b-row>
           <b-col>
-             <b-form-group
+        
+            <b-form-group
+              label-size="sm"
+              description="Destinatario"
+              label="Destinatario"
+              label-for="input-1">
+              <b-form-input size="sm" id="input-1" v-model="form.destinatario"  trim></b-form-input>
+            </b-form-group> 
+
+          </b-col>
+          <b-col>
+           
+
+              <b-form-group
               label-size="sm"
               description="N° Cotización"
               label="N° Cotización"
@@ -73,16 +87,6 @@
               <b-form-input size="sm"  id="input-1" v-model="form.n_cotizacion"   trim></b-form-input>
             </b-form-group>
           
-
-          </b-col>
-          <b-col>
-            <b-form-group
-            label-size="sm"
-            description="Estado cliente"
-            label="Estado cliente"
-            label-for="input-1">
-            <b-form-input size="sm" :disabled="true" v-model="form.cliente_active.value"   trim></b-form-input>
-          </b-form-group> 
           </b-col>
         </b-row> 
       </b-card>
@@ -108,7 +112,15 @@
             </b-form-group>
           </b-col>
           <b-col>
-            <b-button  variant="pdarwin" class="mt-4" size="sm">Crear nuevo proyecto</b-button>
+            <b-form-group
+            v-if="empresas.length == 0"
+            label-size="sm" 
+            label="Si el Proyecto no existe, puede también"
+              >
+            <b-button @click="crearProyecto"  variant="pdarwin" class="" size="sm">Crear nuevo proyecto</b-button>
+
+            </b-form-group>
+
 
           </b-col>
 
@@ -128,11 +140,14 @@
               description="Condiciones generales"
               label="Condiciones generales"
               label-for="input-1">
-              <model-select 
+
+              <basic-select
+                  :selectedOption="form.Condiciones"
+                  @select="changeCondiciones"
                   size="sm"  
-                  :options="[]"
-                  placeholder="Estado">
-              </model-select> 
+                  :options="condicionesFormat"
+                  placeholder="Condiciones">
+              </basic-select> 
             </b-form-group>
           </b-col> 
 
@@ -186,13 +201,22 @@
         header-tag="header"> 
         <b-row>
           <b-col sm="6">
-            <b-form-group 
+              <b-form-group 
               label-size="sm"
-              description="Días hábiles"
-              label="Días hábiles"
-              label-for="input-1">
-              <b-input type="number"></b-input> 
-            </b-form-group>
+              description="Desde"
+              label="Días desde"
+              label-for="input-datapike">
+              <b-form-datepicker id="input-datapike" v-model="form" class="mb-2"></b-form-datepicker>
+
+            </b-form-group> 
+              <b-form-group 
+              label-size="sm"
+              description="Desde"
+              label="Días desde"
+              label-for="input-datapike2">
+              <b-form-datepicker id="input-datapike2" v-model="form" class="mb-2"></b-form-datepicker>
+
+            </b-form-group> 
           </b-col> 
 
         </b-row>  
@@ -242,7 +266,9 @@
 // @ is an alias to /src
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { ModelSelect, BasicSelect } from 'vue-search-select'
-import { VueEditor } from "vue2-editor";
+import { VueEditor } from "vue2-editor"
+import Swal from "sweetalert2"
+
 
 
 export default {
@@ -250,7 +276,11 @@ export default {
   computed:{
     ...mapState('monedas', ['monedas']), 
     ...mapState('clientes', ['clientes']), 
+    ...mapState('proyectos', ['proyectos']), 
+    ...mapState('cotizaciones', ['condiciones']), 
     ...mapGetters('clientes', ['clientesFormat']), 
+    ...mapGetters('proyectos', ['proyectosFormat']), 
+    ...mapGetters('cotizaciones', ['condicionesFormat']), 
 
   },
   components: {
@@ -266,15 +296,21 @@ export default {
   },
   async mounted()
   {
-      // await this.getAllMonedas(
-      // {
-      //   loading: this.loading,
-      //   toast : this.$toast,
-      //   active: "1",
-      //   tipo: "monedas",
-      //   offset: 0,
-      //   limit: 100
-      // })
+
+
+
+       await this.getAllMonedas(
+       {
+         loading: this.$loading,
+         toast : this.$toast,
+         active: "1",
+         tipo: "monedas",
+         offset: 0,
+         limit: 100
+       })
+
+       console.log('paso monedas')
+
     this.loading.hide()
     console.log('mounted::', this.loading)
     const payload = {}
@@ -298,6 +334,35 @@ export default {
   methods:{
     ...mapActions('monedas', ['getAllMonedas']),
     ...mapActions('clientes', ['getClientes', 'validaCliente']), 
+    ...mapActions('proyectos', ['getProyectos', 'crearProyecto']), 
+
+    async crearProyecto()
+    {
+        console.log('crear proyecto')
+
+      await Swal.fire({ text: 'Agregar nuevo proyecto', 
+                        input: 'text',
+                        inputAttributes: {
+                          placeholder: 'Nombre del proyecto',
+                          autocapitalize: 'off'
+                        },
+                        type: 'success', 
+                        confirmButtonText: 'Aceptar',
+                        showCancelButton: true
+                    })
+
+      this.loading.hide()
+      const payload = {}
+
+
+      payload.loading = this.$loading
+      payload.toast = this.$toast
+
+       const proyecto = await this.crearProyecto(payload)
+
+       console.log('proyecto', proyecto)
+
+    },
     async comprobarCliente()
     {
 
@@ -335,20 +400,29 @@ export default {
 
       console.log('form:: ', this.form)
     },
+    async changeCondiciones(item)
+    {
+      this.form.condiciones.value = item.value
+      this.form.condiciones.text = item.text
+    },
     async crear()
     {
       console.log('form:: ', this.form)
+
+         
     }
   }
   ,data(){
     return {
       loading: null,
+      empresas: [],
       form: {
         moneda: null,
         cliente: { text: null, value: null, isError: false, error: null, class: "select-default" },
         cliente_rut: { text: null, value: null, isError: false, error: null, class: "select-default" },
         cliente_nombre: { text: null, value: null, isError: false, error: null, class: "select-default" },
         cliente_active: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        Condiciones: { text: null, value: null, isError: false, error: null, class: "select-default" },
 
       }
       ,customToolbar: [

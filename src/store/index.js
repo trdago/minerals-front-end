@@ -6,6 +6,7 @@ import cotizaciones from './modules/cotizaciones'
 import clientes from './modules/clientes'
 import monedas from './modules/monedas'
 import icp from './modules/icp'
+import proyectos from './modules/proyectos'
 
 
 const modules = {
@@ -13,7 +14,8 @@ const modules = {
   cotizaciones,
   monedas,
   icp,
-  clientes
+  clientes,
+  proyectos
 }
 Vue.use(Vuex)
 

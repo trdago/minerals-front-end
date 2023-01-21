@@ -8,7 +8,7 @@ import CotizacionesView from '../views/cotizaciones/Index'
 import UploadView from '../views/icp/Upload'
 import CotizacionesNewView from '../views/cotizaciones/New'
 import CotizacionesAprobarView from '../views/cotizaciones/Aprobar'
-import CotizacionesVencerView from '../views/cotizaciones/Vencer'
+import CotizacionListPorVencerView from '../views/cotizaciones/Vencer'
 import auth from './../middleware/auth.js'
 import logout from './../middleware/logout.js'
 
@@ -71,9 +71,9 @@ const routes = [
         beforeEnter: auth,
       },
       {
-        path: '/quotations/pendingquotations',
+        path: '/quotations/por_vencer',
         name: 'cotizaciones_por_vencer',
-        component: CotizacionesVencerView,
+        component: CotizacionListPorVencerView,
         beforeEnter: auth,
       },
     ]
