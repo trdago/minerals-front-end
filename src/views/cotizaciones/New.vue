@@ -13,11 +13,13 @@
               description="Nombre cliente"
               label="Seleccione cliente"
               label-for="input-1">
-              <model-select 
+              <basic-select
+                  :selectedOption="form.cliente"
+                  @select="changeCliente"
                   size="sm"  
-                  :options="clientes"
+                  :options="clientesFormat"
                   placeholder="Cliente">
-              </model-select> 
+              </basic-select> 
             </b-form-group>
           </b-col>
           <b-col> 
@@ -27,10 +29,14 @@
             description="Run del cliente"
             label="Rut Cliente"
             label-for="input-1">
-
-
-            <b-form-input   size="sm"  v-model="form.run_cliente"  trim></b-form-input> 
+            <b-input-group  size="sm">
+                <b-form-input v-model="form.cliente_rut.value" trim></b-form-input>
+            <b-input-group-append>
+              <b-button @click="comprobarCliente" :disabled="!form.cliente_rut.value"  variant="pdarwin">Comprobar</b-button>
+            </b-input-group-append>
+          </b-input-group>
           </b-form-group>
+
 
           </b-col>
 
@@ -51,7 +57,7 @@
             description="Nombre cliente"
             label="Nombre cliente"
             label-for="input-1">
-            <b-form-input size="sm" :disabled="true" id="input-1" v-model="form.nombre_cliente_dos"   trim></b-form-input>
+            <b-form-input size="sm" :disabled="true" id="input-1" v-model="form.cliente_nombre.value"   trim></b-form-input>
           </b-form-group>
 
           </b-col>
@@ -75,7 +81,7 @@
             description="Estado cliente"
             label="Estado cliente"
             label-for="input-1">
-            <b-form-input size="sm" :disabled="true" id="input-1" v-model="form.estado_cliente"   trim></b-form-input>
+            <b-form-input size="sm" :disabled="true" v-model="form.cliente_active.value"   trim></b-form-input>
           </b-form-group> 
           </b-col>
         </b-row> 
@@ -234,8 +240,8 @@
 
 <script>
 // @ is an alias to /src
-import { mapState, mapActions } from 'vuex'
-import { ModelSelect } from 'vue-search-select'
+import { mapState, mapActions, mapGetters } from 'vuex'
+import { ModelSelect, BasicSelect } from 'vue-search-select'
 import { VueEditor } from "vue2-editor";
 
 
@@ -244,10 +250,12 @@ export default {
   computed:{
     ...mapState('monedas', ['monedas']), 
     ...mapState('clientes', ['clientes']), 
+    ...mapGetters('clientes', ['clientesFormat']), 
 
   },
   components: {
       ModelSelect,
+      BasicSelect,
       VueEditor
   },
   async created()
@@ -275,9 +283,9 @@ export default {
     payload.loading = this.$loading
     payload.toast = this.$toast
 
-    payload.tipo = 'compañías'
+    payload.tipo = 'compañias'
 
-    payload.active= 1
+    payload.active= '1'
     payload.offset= 1
     payload.limit= 1
     payload.id= 0
@@ -289,7 +297,44 @@ export default {
   },
   methods:{
     ...mapActions('monedas', ['getAllMonedas']),
-    ...mapActions('clientes', ['getClientes']), 
+    ...mapActions('clientes', ['getClientes', 'validaCliente']), 
+    async comprobarCliente()
+    {
+
+      this.loading.hide()
+      const payload = {}
+
+
+      payload.loading = this.$loading
+      payload.toast = this.$toast
+
+      payload.tipo = 'compañia'
+
+      payload.active= '1'
+      payload.offset= 1
+      payload.limit= 1
+      payload.rut= Number((this.form.cliente_rut.value).split('-')[0])
+
+      const cliente = await this.validaCliente(payload)
+
+
+      this.form.cliente_nombre.value = cliente.name
+      this.form.cliente_active.value = cliente.active ? 'Activo':'Desactivado'
+
+      console.log('form:: ', this.form)
+    },
+    async changeCliente(item)
+    {
+      this.form.cliente.value = item.value
+      this.form.cliente.text = item.text
+
+      const cliente  = this.clientes.find(cl => cl.id = item.value)
+
+      console.log('cliente', cliente)
+      this.form.cliente_rut.value =`${ cliente.rut }-${ cliente.dv }`
+
+      console.log('form:: ', this.form)
+    },
     async crear()
     {
       console.log('form:: ', this.form)
@@ -300,6 +345,10 @@ export default {
       loading: null,
       form: {
         moneda: null,
+        cliente: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        cliente_rut: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        cliente_nombre: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        cliente_active: { text: null, value: null, isError: false, error: null, class: "select-default" },
 
       }
       ,customToolbar: [
