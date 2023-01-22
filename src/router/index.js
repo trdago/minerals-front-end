@@ -7,8 +7,10 @@ import CotizacionListView from '../views/cotizaciones/List'
 import CotizacionesView from '../views/cotizaciones/Index'
 import UploadView from '../views/icp/Upload'
 import CotizacionesNewView from '../views/cotizaciones/New'
+import CotizacionesNewDosView from '../views/cotizaciones/Nueva'
 import CotizacionesAprobarView from '../views/cotizaciones/Aprobar'
 import CotizacionListPorVencerView from '../views/cotizaciones/Vencer'
+import CotizacionVerView from '../views/cotizaciones/Ver'
 import auth from './../middleware/auth.js'
 import logout from './../middleware/logout.js'
 
@@ -65,8 +67,14 @@ const routes = [
         beforeEnter: auth,
       },
       {
+        path: '/quotations/add/2',
+        name: 'cotizaciones_new_dos',
+        component: CotizacionesNewDosView,
+        beforeEnter: auth,
+      },
+      {
         path: '/quotations/pendingquotations',
-        name: 'cotizaciones_pendiente',
+        name: 'cotizaciones_pendientes',
         component: CotizacionesAprobarView,
         beforeEnter: auth,
       },
@@ -74,6 +82,12 @@ const routes = [
         path: '/quotations/por_vencer',
         name: 'cotizaciones_por_vencer',
         component: CotizacionListPorVencerView,
+        beforeEnter: auth,
+      },
+      {
+        path: '/quotations/por_vencer',
+        name: 'cotizaciones_ver',
+        component: CotizacionVerView,
         beforeEnter: auth,
       },
     ]

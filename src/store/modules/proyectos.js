@@ -37,28 +37,7 @@ const actions = {
         }
     
     },
-    async crearProyecto(state, payload) 
-    {   
-        console.log('valida cliente', payload)
-        let loading = payload.loading.show()
 
-        try {
-
-            const { data } =  await axios.post('/api/herramientas/comprobar', payload)
-
-            if(!data.ok) throw { message: 'No se logro  crear proyeto'}
-
-         
-            loading.hide()
-            return data.data[0]
-
-        } catch (error) {
-            payload.toast.error("Error No se logro crear el proyecto")
-            loading.hide()
-            console.error('Error No se logro crear el proyecto: ', error) 
-        }
-    
-    }
 }
 
 const getters= { 

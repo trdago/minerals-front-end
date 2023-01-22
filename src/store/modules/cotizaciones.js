@@ -3,10 +3,7 @@ import axios from 'axios'
 const state = {
     cotizaciones: [],
     condiciones: [],
-    form: {
-
-        
-    },
+    cotiza: null,
     totalRows: 0,
     pageOptions: [
         {value: 5, text: '5'},
@@ -22,6 +19,15 @@ const mutations = {
     {
         state.totalRows = payload.total_registros
         state.cotizaciones = payload.data
+    },
+
+    SET_CONDICIONES(state, payload)
+    {
+        state.condiciones = payload.data
+    },
+    SET_COTIZACION(state, payload)
+    {
+        state.cotiza = payload
     }
 
 }
@@ -46,9 +52,68 @@ const actions = {
             payload.toast.error("Error al buscar las cotizaciones")
             loading.hide()
             console.error('Error al buscar las cotizaciones:: ', error) 
-        }
-     
+        } 
+    },
+    async searchCondiciones({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
 
+        try {
+
+            const { data } = await axios.post('/api/herramientas/gettool', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar las condiciones'}
+            
+
+            await commit('SET_CONDICIONES', data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar las condiciones")
+            loading.hide()
+            console.error('Error al buscar las condiciones:: ', error) 
+        } 
+    },
+    async crearProyecto(state, payload) 
+    {   
+        console.log('crear proyecto', payload)
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } =  await axios.post('/api/quotations/accion', payload)
+
+            if(!data.ok) throw { message: 'No se logro  crear proyeto'}
+
+            loading.hide()
+            return data.data[0]
+
+        } catch (error) {
+            payload.toast.error("Error No se logro crear el proyecto")
+            loading.hide()
+            console.error('Error No se logro crear el proyecto: ', error) 
+        }
+    },
+    async crearCotizacion({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+            const { data } =  await axios.post('/api/quotations/accion', payload)
+
+            if(!data.ok) throw { message: 'No se crear cotizacion'}
+
+            loading.hide()
+            payload.toast.success("Cotizacion creada")
+            console.log('NUEVA COTIZACION::::', data)
+            await commit('SET_COTIZACION', data.data[0])
+            return data.data[0]
+
+        } catch (error) {
+            payload.toast.error("Error no se crear cotizacion")
+            loading.hide()
+            console.error('Error No  se crear cotizacion: ', error) 
+        }
     
     }
 }
@@ -60,7 +125,7 @@ const getters= {
 
         if(!state.condiciones) return []
 
-        return state.condiciones.map(item => ({ value: item.id, text: item.name }))
+        return state.condiciones.map(item => ({ value: item.id, text: item.title }))
     }
 }
 

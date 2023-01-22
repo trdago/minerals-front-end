@@ -72,7 +72,7 @@
               description="Destinatario"
               label="Destinatario"
               label-for="input-1">
-              <b-form-input size="sm" id="input-1" v-model="form.destinatario"  trim></b-form-input>
+              <b-form-input size="sm" id="input-1" v-model="form.destinatario.value"  trim></b-form-input>
             </b-form-group> 
 
           </b-col>
@@ -84,7 +84,7 @@
               description="N° Cotización"
               label="N° Cotización"
               label-for="input-1">
-              <b-form-input size="sm"  id="input-1" v-model="form.n_cotizacion"   trim></b-form-input>
+              <b-form-input size="sm"  id="input-1" v-model="form.cotizacion.value"   trim></b-form-input>
             </b-form-group>
           
           </b-col>
@@ -104,20 +104,24 @@
               description="Seleccione un Proyecto"
               label="Seleccione un Proyecto"
               label-for="input-1">
-              <model-select 
+              
+              <basic-select 
+                  :selectedOption="form.proyecto"
+                  :disabled="proyectosFormat.length == 0"
+                  @select="changeProyecto"
                   size="sm"  
-                  :options="[]"
+                  :options="proyectosFormat"
                   placeholder="Estado">
-              </model-select> 
+              </basic-select> 
             </b-form-group>
           </b-col>
           <b-col>
             <b-form-group
             v-if="empresas.length == 0"
             label-size="sm" 
-            label="Si el Proyecto no existe, puede también"
+            label="Si el Proyecto no existe, puede también Crear nuevo proyecto"
               >
-            <b-button @click="crearProyecto"  variant="pdarwin" class="" size="sm">Crear nuevo proyecto</b-button>
+            <b-button :disabled="!form.cliente.value" @click="newProyecto"  variant="pdarwin" class="" size="sm">Crear nuevo proyecto</b-button>
 
             </b-form-group>
 
@@ -142,7 +146,7 @@
               label-for="input-1">
 
               <basic-select
-                  :selectedOption="form.Condiciones"
+                  :selectedOption="form.condiciones"
                   @select="changeCondiciones"
                   size="sm"  
                   :options="condicionesFormat"
@@ -162,7 +166,7 @@
               label-for="input-1">
               <vue-editor
               :editor-toolbar="customToolbar"
-               v-model="form.especificaciones">
+               v-model="form.especificaciones.value">
               </vue-editor>
              
   
@@ -186,7 +190,7 @@
               description="Días hábiles"
               label="Días hábiles"
               label-for="input-1">
-              <b-input type="number"></b-input> 
+              <b-input v-model="form.tiempo.value" type="number">12</b-input> 
             </b-form-group>
           </b-col> 
 
@@ -206,15 +210,15 @@
               description="Desde"
               label="Días desde"
               label-for="input-datapike">
-              <b-form-datepicker id="input-datapike" v-model="form" class="mb-2"></b-form-datepicker>
+              <b-form-datepicker id="input-datapike" v-model="form.desde.value" class="mb-2"></b-form-datepicker>
 
             </b-form-group> 
               <b-form-group 
               label-size="sm"
-              description="Desde"
-              label="Días desde"
+              description="hasta"
+              label="Días hasta"
               label-for="input-datapike2">
-              <b-form-datepicker id="input-datapike2" v-model="form" class="mb-2"></b-form-datepicker>
+              <b-form-datepicker id="input-datapike2" v-model="form.hasta.value" class="mb-2"></b-form-datepicker>
 
             </b-form-group> 
           </b-col> 
@@ -236,12 +240,13 @@
               description="Moneda"
               label="Moneda"
               label-for="input-1">
-              <model-select
-                  v-model="form.moneda" 
+               <basic-select
+                  :selectedOption="form.moneda"
+                  @select="changeMonedas"
                   size="sm"  
-                  :options="monedas"
-                  placeholder="Estado">
-              </model-select> 
+                  :options="monedasFormat"
+                  placeholder="Condiciones">
+              </basic-select> 
             </b-form-group>
           </b-col> 
         </b-row> 
@@ -255,6 +260,8 @@
         Crear cotización</b-button>
       </b-col>
     </b-row>
+
+    {{ form.cotizacion.value}}
   </div>
 </template>
 
@@ -265,7 +272,8 @@
 <script>
 // @ is an alias to /src
 import { mapState, mapActions, mapGetters } from 'vuex'
-import { ModelSelect, BasicSelect } from 'vue-search-select'
+import route from '../../router'
+import { BasicSelect } from 'vue-search-select'
 import { VueEditor } from "vue2-editor"
 import Swal from "sweetalert2"
 
@@ -278,13 +286,12 @@ export default {
     ...mapState('clientes', ['clientes']), 
     ...mapState('proyectos', ['proyectos']), 
     ...mapState('cotizaciones', ['condiciones']), 
-    ...mapGetters('clientes', ['clientesFormat']), 
-    ...mapGetters('proyectos', ['proyectosFormat']), 
+    ...mapGetters('clientes', ['clientesFormat', 'proyectosFormat']), 
     ...mapGetters('cotizaciones', ['condicionesFormat']), 
+    ...mapGetters('monedas', ['monedasFormat']), 
 
   },
   components: {
-      ModelSelect,
       BasicSelect,
       VueEditor
   },
@@ -296,8 +303,15 @@ export default {
   },
   async mounted()
   {
-
-
+       await this.searchCondiciones(
+       {
+         loading: this.$loading,
+         toast : this.$toast,
+         active: "1",
+         tipo: "condiciones",
+         offset: 0,
+         limit: 20
+       })
 
        await this.getAllMonedas(
        {
@@ -334,13 +348,14 @@ export default {
   methods:{
     ...mapActions('monedas', ['getAllMonedas']),
     ...mapActions('clientes', ['getClientes', 'validaCliente']), 
-    ...mapActions('proyectos', ['getProyectos', 'crearProyecto']), 
+    ...mapActions('proyectos', ['getProyectos']), 
+    ...mapActions('cotizaciones', ['searchCondiciones', 'crearProyecto', 'crearCotizacion']), 
 
-    async crearProyecto()
+    async newProyecto()
     {
         console.log('crear proyecto')
 
-      await Swal.fire({ text: 'Agregar nuevo proyecto', 
+      const { value } = await Swal.fire({ text: 'Agregar nuevo proyecto', 
                         input: 'text',
                         inputAttributes: {
                           placeholder: 'Nombre del proyecto',
@@ -348,19 +363,27 @@ export default {
                         },
                         type: 'success', 
                         confirmButtonText: 'Aceptar',
-                        showCancelButton: true
+                        showCancelButton: false
                     })
 
-      this.loading.hide()
-      const payload = {}
+    if(!value) return console.error('no se coloco nombre')
 
+    this.loading.hide()
+    const payload = {}
 
-      payload.loading = this.$loading
-      payload.toast = this.$toast
+    payload.loading = this.$loading
+    payload.toast = this.$toast
+    payload.accion = 'nuevo_proyecto'
+    payload.company_id = this.form.cliente.value
+    payload.name = value
 
-       const proyecto = await this.crearProyecto(payload)
+    const proyecto = await this.crearProyecto(payload)
 
-       console.log('proyecto', proyecto)
+    console.log('proyecto:: ', proyecto)
+    
+    await this.comprobarCliente()
+    
+      // console.log('proyecto', proyecto)
 
     },
     async comprobarCliente()
@@ -390,24 +413,64 @@ export default {
     },
     async changeCliente(item)
     {
+
+      console.log('iem cliente:::', item)
       this.form.cliente.value = item.value
       this.form.cliente.text = item.text
 
-      const cliente  = this.clientes.find(cl => cl.id = item.value)
+      const cliente  = this.clientes.find(cl => cl.id ==item.value)
 
-      console.log('cliente', cliente)
+      console.log('cliente::', cliente)
       this.form.cliente_rut.value =`${ cliente.rut }-${ cliente.dv }`
 
       console.log('form:: ', this.form)
+    },
+    async changeProyecto(item)
+    {
+
+      this.form.proyecto.value = item.value
+      this.form.proyecto.text = item.text 
     },
     async changeCondiciones(item)
     {
       this.form.condiciones.value = item.value
       this.form.condiciones.text = item.text
     },
+    async changeMonedas(item)
+    {
+      this.form.moneda.value = item.value
+      this.form.moneda.text = item.text
+    },
+
     async crear()
     {
-      console.log('form:: ', this.form)
+
+       this.loading.hide()
+      const payload = {}
+
+
+      payload.loading = this.$loading
+      payload.toast = this.$toast
+      payload.accion = 'nueva_cotizacion'
+      payload.active = "0"
+      payload.expiration_date = this.form.hasta.value
+      payload.company_id = this.form.cliente.value 
+      payload.estimated_days = this.form.tiempo.value
+      payload.proyect_id = this.form.proyecto.value
+      payload.destinatario = this.form.destinatario.value
+
+      payload.currency_id = this.form.moneda.value
+      payload.quotation_state_id = 5
+      payload.version = 1
+      payload.general_condition_id = 1
+      payload.state_id = 1
+      payload.start_date = this.form.desde.value
+      payload.specific_condition = this.form.especificaciones.value
+      payload.quotation_number = this.form.cotizacion.value
+
+      await this.crearCotizacion(payload) 
+
+       await route.push({name: 'cotizaciones_new_dos'})
 
          
     }
@@ -417,12 +480,20 @@ export default {
       loading: null,
       empresas: [],
       form: {
-        moneda: null,
         cliente: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        proyecto: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        especificaciones: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        destinatario: { text: null, value: null, isError: false, error: null, class: "select-default" },
         cliente_rut: { text: null, value: null, isError: false, error: null, class: "select-default" },
         cliente_nombre: { text: null, value: null, isError: false, error: null, class: "select-default" },
         cliente_active: { text: null, value: null, isError: false, error: null, class: "select-default" },
-        Condiciones: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        condiciones: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        monedas: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        moneda: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tiempo: { text: null, value: 12, isError: false, error: null, class: "select-default" },
+        desde: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        hasta: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        cotizacion: { text: null, value: null, isError: false, error: null, class: "select-default" },
 
       }
       ,customToolbar: [

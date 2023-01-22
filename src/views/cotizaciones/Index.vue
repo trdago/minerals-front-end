@@ -27,7 +27,15 @@
                 :to="{name: 'cotizaciones_new'}" >
                   <small>Nueva Cotización</small>
               </b-list-group-item>
-              <b-list-group-item active-class="active" class="text-small text-center"  href="#"><small>Aprobar Cotización</small></b-list-group-item>
+
+              <b-list-group-item 
+              active-class="active" 
+              class="text-small text-center"  
+              :to="{ name: 'cotizaciones_pendientes'}"
+              @click="seccion='Aprobar Cotización'"
+              ><small>Aprobar Cotización</small>
+              
+              </b-list-group-item>
               <b-list-group-item 
               active-class="active" 
               class="text-small text-center"
