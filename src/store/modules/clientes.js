@@ -2,11 +2,16 @@
 import axios from 'axios'
 const state = {
     clientes: [], 
+    cliente: null, 
     proyectos: []
 }
 
 const mutations = { 
 
+    SET_CLIENTE(state, payload)
+    {
+        state.cliente = payload
+    },
     SET_CLIENTES(state, payload)
     {
         state.clientes = payload
@@ -58,9 +63,10 @@ const actions = {
             payload.toast.success(`Cliente ${ data.data[0].name } existe en el sistema`)
             loading.hide()
 
+            data.data[0].rut = payload.rut
 
             await commit('SET_PROYECTOS', data.data[0].proyectos)
-
+            await commit('SET_CLIENTE', data.data[0]) 
             return data.data[0]
 
         } catch (error) {

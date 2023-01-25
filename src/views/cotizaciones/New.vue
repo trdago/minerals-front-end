@@ -405,9 +405,10 @@ export default {
 
       const cliente = await this.validaCliente(payload)
 
-
+      
       this.form.cliente_nombre.value = cliente.name
       this.form.cliente_active.value = cliente.active ? 'Activo':'Desactivado'
+      this.form.cotizacion.value = cliente.quotation_number
 
       console.log('form:: ', this.form)
     },

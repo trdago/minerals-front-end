@@ -16,6 +16,10 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import VueLoading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import 'vue-search-select/dist/VueSearchSelect.css'
+ 
+import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format';
+
+Vue.use(VueFilterDateFormat)
 
 
 Vue.use(vueRut)

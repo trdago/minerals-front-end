@@ -1,10 +1,10 @@
-
 import axios from 'axios'
 const state = {
     cotizaciones: [],
     condiciones: [],
     cotiza: null,
     totalRows: 0,
+    tipos_ensayos: [],
     pageOptions: [
         {value: 5, text: '5'},
         {value: 10, text: '10'},
@@ -28,12 +28,31 @@ const mutations = {
     SET_COTIZACION(state, payload)
     {
         state.cotiza = payload
+    },
+    SET_TIPOS_ENSAYO(state, payload)
+    {
+        state.tipos_ensayos = payload
     }
 
 }
 
 const actions = {
 
+    async download(state, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            // todo
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar las cotizaciones")
+            loading.hide()
+            console.error('Error al buscar las cotizaciones:: ', error) 
+        } 
+    },
     async searchFilter({commit}, payload) 
     {   
         let loading = payload.loading.show()
@@ -52,6 +71,26 @@ const actions = {
             payload.toast.error("Error al buscar las cotizaciones")
             loading.hide()
             console.error('Error al buscar las cotizaciones:: ', error) 
+        } 
+    },
+    async getTipoEnsayo({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post('/api/herramientas/gettool', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los tipos de ensayos'}
+            
+
+            await commit('SET_TIPOS_ENSAYO', data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los tipos de ensayos")
+            loading.hide()
+            console.error('Error al buscar los tipos de ensayos:: ', error) 
         } 
     },
     async searchCondiciones({commit}, payload) 
@@ -101,16 +140,18 @@ const actions = {
         try {
             const { data } =  await axios.post('/api/quotations/accion', payload)
 
-            if(!data.ok) throw { message: 'No se crear cotizacion'}
+            console.log(data)
 
-            loading.hide()
+            if(!data.ok) throw { message: 'No se creo cotizacion'} 
+
+            loading.hide() 
             payload.toast.success("Cotizacion creada")
             console.log('NUEVA COTIZACION::::', data)
             await commit('SET_COTIZACION', data.data[0])
             return data.data[0]
 
         } catch (error) {
-            payload.toast.error("Error no se crear cotizacion")
+            payload.toast.error("Error no se creo cotizacion")
             loading.hide()
             console.error('Error No  se crear cotizacion: ', error) 
         }
