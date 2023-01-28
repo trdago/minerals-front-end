@@ -38,15 +38,15 @@ const mutations = {
     },
     SET_TIPOS_MUESTRA(state, payload)
     {
-        state.tipos_ensayos = payload
+        state.tipos_muestras = payload
     },
     SET_TIPOS_DIGESTION(state, payload)
     {
-        state.tipos_ensayos = payload
+        state.tipos_digestiones = payload
     },
     SET_TIPOS_TECNICA(state, payload)
     {
-        state.tipos_ensayos = payload
+        state.tipos_tecnicas = payload
     }
 
 }
@@ -139,7 +139,7 @@ const actions = {
             if(!data.ok) throw { message: 'No se logro consultar por los tipos de digestion'}
             
 
-            await commit('SET_TIPOS_ENSAYO', data.data)
+            await commit('SET_TIPOS_DIGESTION', data.data)
 
             loading.hide()
         } catch (error) {
@@ -159,7 +159,7 @@ const actions = {
             if(!data.ok) throw { message: 'No se logro consultar por los tipos de tecnicas'}
             
 
-            await commit('SET_TIPOS_ENSAYO', data.data)
+            await commit('SET_TIPOS_TECNICA', data.data)
 
             loading.hide()
         } catch (error) {

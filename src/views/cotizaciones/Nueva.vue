@@ -49,6 +49,12 @@
         </b-row> 
         <b-row> 
           <b-col>
+
+             <b-form-group 
+              label-size="sm"
+              description="tipo de ensayo"
+              label="Tipo de ensayo"
+              label-for="input-1">
             <basic-select
                   :selectedOption="form.tipo_ensayo"
                   @select="changeEnsayo"
@@ -56,32 +62,53 @@
                   :options="ensayosFormat"
                   placeholder="tipos de ensayo">
               </basic-select> 
+             </b-form-group>
 
           </b-col>
           <b-col>
-               <basic-select
+              <b-form-group 
+              label-size="sm"
+              description="tipo de muestra"
+              label="Tipo de muestra"
+              label-for="input-1">
+              <basic-select
                   :selectedOption="form.tipo_muestra"
                   @select="changeMuestra"
                   size="sm"  
                   :options="muestrasFormat"
                   placeholder="tipos de muestras">
               </basic-select> 
+             </b-form-group>
+             
 
           </b-col>
         </b-row>
-        <b-row class="mt-1"> 
+        <b-row> 
           <b-col>
-            <basic-select
+                <b-form-group 
+              label-size="sm"
+              description="tipo de digestion "
+              label="Tipo de digestion"
+              label-for="input-1">
+              <basic-select
                   :selectedOption="form.tipo_digestion"
                   @select="changeDigestion"
                   size="sm"  
                   :options="digestionesFormat"
                   placeholder="tipos de digestiones">
               </basic-select> 
+             </b-form-group>
+            
+            
 
           </b-col>
           <b-col>
-               <basic-select
+                <b-form-group 
+              label-size="sm"
+              description="tipo de tecnica"
+              label="Tipo de tecnica"
+              label-for="input-1">
+              <basic-select
                   :selectedOption="form.tipo_tecnica"
                   @select="changeTecnica"
                   size="sm"  
@@ -89,6 +116,8 @@
                   placeholder="tipos de tecnicas">
               </basic-select> 
 
+             </b-form-group>
+               
           </b-col>
         </b-row>
         <b-row> 
@@ -139,7 +168,7 @@ export default {
           loading: this.$loading,
            toast : this.$toast,
           active : "1",
-          tipo : "tipos_muestra",
+          tipo : "tipo_muestra",
           offset :0,
           limit :20
        })
