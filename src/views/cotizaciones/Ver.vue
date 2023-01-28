@@ -4,9 +4,6 @@
   </div>
 </template>
 
-<style scoped>
-
-</style>
 
 <script>
 // @ is an alias to /src

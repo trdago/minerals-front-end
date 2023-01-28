@@ -5,6 +5,9 @@ const state = {
     cotiza: null,
     totalRows: 0,
     tipos_ensayos: [],
+    tipos_muestras: [],
+    tipos_digestiones: [],
+    tipos_tecnicas: [],
     pageOptions: [
         {value: 5, text: '5'},
         {value: 10, text: '10'},
@@ -30,6 +33,18 @@ const mutations = {
         state.cotiza = payload
     },
     SET_TIPOS_ENSAYO(state, payload)
+    {
+        state.tipos_ensayos = payload
+    },
+    SET_TIPOS_MUESTRA(state, payload)
+    {
+        state.tipos_ensayos = payload
+    },
+    SET_TIPOS_DIGESTION(state, payload)
+    {
+        state.tipos_ensayos = payload
+    },
+    SET_TIPOS_TECNICA(state, payload)
     {
         state.tipos_ensayos = payload
     }
@@ -84,13 +99,73 @@ const actions = {
             if(!data.ok) throw { message: 'No se logro consultar por los tipos de ensayos'}
             
 
-            await commit('SET_TIPOS_ENSAYO', data)
+            await commit('SET_TIPOS_ENSAYO', data.data)
 
             loading.hide()
         } catch (error) {
             payload.toast.error("Error al buscar los tipos de ensayos")
             loading.hide()
             console.error('Error al buscar los tipos de ensayos:: ', error) 
+        } 
+    },
+    async getTipoMuestra({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post('/api/herramientas/gettool', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los tipos de muestras'}
+            
+
+            await commit('SET_TIPOS_MUESTRA', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los tipos de muestras")
+            loading.hide()
+            console.error('Error al buscar los tipos de muestras:: ', error) 
+        } 
+    },
+    async getTipoDigestion({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post('/api/herramientas/gettool', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los tipos de digestion'}
+            
+
+            await commit('SET_TIPOS_ENSAYO', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los tipos de digestion")
+            loading.hide()
+            console.error('Error al buscar los tipos de diogestion:: ', error) 
+        } 
+    },
+    async getTipoTecnica({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post('/api/herramientas/gettool', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los tipos de tecnicas'}
+            
+
+            await commit('SET_TIPOS_ENSAYO', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los tipos de tecnicas")
+            loading.hide()
+            console.error('Error al buscar los tipos de tecnicas:: ', error) 
         } 
     },
     async searchCondiciones({commit}, payload) 
@@ -167,6 +242,34 @@ const getters= {
         if(!state.condiciones) return []
 
         return state.condiciones.map(item => ({ value: item.id, text: item.title }))
+    },
+    ensayosFormat: state => {
+
+        if(!state.tipos_ensayos) return []
+
+
+        return state.tipos_ensayos.map(item => ({ value: item.id, text: item.name }))
+    },
+    muestrasFormat: state => {
+
+        if(!state.tipos_muestras) return []
+
+
+        return state.tipos_muestras.map(item => ({ value: item.id, text: item.name }))
+    },
+    digestionesFormat: state => {
+
+        if(!state.tipos_digestiones) return []
+
+
+        return state.tipos_digestiones.map(item => ({ value: item.id, text: item.name }))
+    },
+    tecnicasFormat: state => {
+
+        if(!state.tipos_tecnicas) return []
+
+
+        return state.tipos_tecnicas.map(item => ({ value: item.id, text: item.name }))
     }
 }
 

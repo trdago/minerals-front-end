@@ -53,12 +53,41 @@
                   :selectedOption="form.tipo_ensayo"
                   @select="changeEnsayo"
                   size="sm"  
-                  :options="tiposensayosFormat"
+                  :options="ensayosFormat"
                   placeholder="tipos de ensayo">
               </basic-select> 
 
           </b-col>
           <b-col>
+               <basic-select
+                  :selectedOption="form.tipo_muestra"
+                  @select="changeMuestra"
+                  size="sm"  
+                  :options="muestrasFormat"
+                  placeholder="tipos de muestras">
+              </basic-select> 
+
+          </b-col>
+        </b-row>
+        <b-row class="mt-1"> 
+          <b-col>
+            <basic-select
+                  :selectedOption="form.tipo_digestion"
+                  @select="changeDigestion"
+                  size="sm"  
+                  :options="digestionesFormat"
+                  placeholder="tipos de digestiones">
+              </basic-select> 
+
+          </b-col>
+          <b-col>
+               <basic-select
+                  :selectedOption="form.tipo_tecnica"
+                  @select="changeTecnica"
+                  size="sm"  
+                  :options="tecnicasFormat"
+                  placeholder="tipos de tecnicas">
+              </basic-select> 
 
           </b-col>
         </b-row>
@@ -82,12 +111,13 @@
 
 <script>
 // @ is an alias to /src
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 import { BasicSelect } from 'vue-search-select'
 export default {
   name: 'CotizacionesNewDosView',
   computed:{
-    ...mapState('cotizaciones', ['cotiza', 'tiposensayosFormat']),
+    ...mapState('cotizaciones', ['cotiza']),
+    ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat']), 
     ...mapState('clientes', ['cliente'])
   },
   components: {
@@ -95,7 +125,7 @@ export default {
   },
   async mounted()
   {
-       await this.getTipoEnsayo(
+       this.getTipoEnsayo(
        {
           loading: this.$loading,
            toast : this.$toast,
@@ -104,16 +134,61 @@ export default {
           offset :0,
           limit :20
        }) 
+       this.getTipoMuestra(
+       {
+          loading: this.$loading,
+           toast : this.$toast,
+          active : "1",
+          tipo : "tipos_muestra",
+          offset :0,
+          limit :20
+       })
+       this.getTipoDigestion(
+       {
+          loading: this.$loading,
+           toast : this.$toast,
+          active : "1",
+          tipo : "digestiones",
+          offset :0,
+          limit :20
+       })
+       await this.getTipoTecnica(
+       {
+          loading: this.$loading,
+           toast : this.$toast,
+          active : "1",
+          tipo : "tecnica",
+          offset :0,
+          limit :20
+       }) 
 
 
   },
   methods:{
-    ...mapActions('cotizaciones', ['getTipoEnsayo']),
+    ...mapActions('cotizaciones', ['getTipoEnsayo', 'getTipoMuestra', 'getTipoDigestion', 'getTipoTecnica']),
 
     async changeEnsayo(item)
     {
       this.form.tipo_ensayo.value = item.value 
       this.form.tipo_ensayo.text = item.text
+
+    },
+    async changeMuestra(item)
+    {
+      this.form.tipo_muestra.value = item.value 
+      this.form.tipo_muestra.text = item.text
+
+    },
+    async changeDigestion(item)
+    {
+      this.form.tipo_digestion.value = item.value 
+      this.form.tipo_digestion.text = item.text
+
+    },
+    async changeTecnica(item)
+    {
+      this.form.tipo_tecnica.value = item.value 
+      this.form.tipo_tecnica.text = item.text
 
     }
 
@@ -122,6 +197,9 @@ export default {
     return { 
       form: { 
         tipo_ensayo: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_muestra: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_digestion: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_tecnica: { text: null, value: null, isError: false, error: null, class: "select-default" },
 
       }
      

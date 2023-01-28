@@ -16,6 +16,7 @@
     "sweetalert2": "^11.7.0",
     "vue": "^2.7.13",
     "vue-file-base64": "^1.0.2",
+    "vue-loader": "14.1.1",
     "vue-loading-overlay": "^3.4.2",
     "vue-router": "^3.5.1",
     "vue-rut": "^2.0.2",
