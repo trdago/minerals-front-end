@@ -2,8 +2,10 @@ import axios from 'axios'
 const state = {
     cotizaciones: [],
     condiciones: [],
+    cotizaciones_historicas: [],
     cotiza: null,
     totalRows: 0,
+    servicios: [],
     tipos_ensayos: [],
     tipos_muestras: [],
     tipos_digestiones: [],
@@ -47,6 +49,14 @@ const mutations = {
     SET_TIPOS_TECNICA(state, payload)
     {
         state.tipos_tecnicas = payload
+    },
+    SET_SERVICIOS(state, payload)
+    {
+        state.servicios = payload
+    },
+    SET_COTIZACIONES_HISTORIAL(state, payload)
+    {
+        state.cotizaciones_historicas = payload
     }
 
 }
@@ -80,6 +90,48 @@ const actions = {
             
 
             await commit('SET_COTIZACIONES', data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar las cotizaciones")
+            loading.hide()
+            console.error('Error al buscar las cotizaciones:: ', error) 
+        } 
+    },
+    async getServicios({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post('/api/herramientas/gettool', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los servicios'}
+            
+
+            await commit('SET_SERVICIOS', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los servicios")
+            loading.hide()
+            console.error('Error al buscar los servicios:: ', error) 
+        } 
+    },
+    async getCotizaciones({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+            if (payload.company_id) throw { message: 'Falta el parametro company_id'}
+            if (payload.project_id) throw { message: 'Falta el parametro project_id'}
+
+            const { data } = await axios.get(`/api/history/:${payload.company_id}/project/${ payload.project_id}`)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los servicios'}
+            
+
+            await commit('SET_COTIZACIONES_HISTORIAL', data.data)
 
             loading.hide()
         } catch (error) {
@@ -270,6 +322,20 @@ const getters= {
 
 
         return state.tipos_tecnicas.map(item => ({ value: item.id, text: item.name }))
+    },
+    cotizacioneshistoricasFormat: state => {
+
+        if(!state.cotizaciones_historicas) return []
+
+
+        return state.cotizaciones_historicas.map(item => ({ value: item.id, text: item.name }))
+    },
+    serviciosFormat: state => {
+
+        if(!state.servicios) return []
+
+
+        return state.servicios.map(item => ({ value: item.id, text: item.name }))
     }
 }
 
