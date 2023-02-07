@@ -6,6 +6,7 @@ const state = {
     cotiza: null,
     totalRows: 0,
     servicios: [],
+    servicios_agregados: [],
     tipos_ensayos: [],
     tipos_muestras: [],
     tipos_digestiones: [],
@@ -57,6 +58,10 @@ const mutations = {
     SET_COTIZACIONES_HISTORIAL(state, payload)
     {
         state.cotizaciones_historicas = payload
+    },
+    SET_SERVICIOS_AGREGADOS(state, payload)
+    {
+        state.servicios_agregados = payload
     }
 
 }
@@ -104,7 +109,7 @@ const actions = {
 
         try {
 
-            const { data } = await axios.post('/api/herramientas/gettool', payload)
+            const { data } = await axios.post('/api/quotations/services', payload)
 
             if(!data.ok) throw { message: 'No se logro consultar por los servicios'}
             
@@ -238,6 +243,25 @@ const actions = {
             payload.toast.error("Error al buscar las condiciones")
             loading.hide()
             console.error('Error al buscar las condiciones:: ', error) 
+        } 
+    },
+    async setServicios({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } =  await axios.post('/api/quotations/cargarservicios', payload)
+
+            console.log('data:: ', data)
+
+            await commit('SET_SERVICIOS_AGREGADOS', data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al agregar servicio")
+            loading.hide()
+            console.error('Error al agregar servicio:: ', error) 
         } 
     },
     async crearProyecto(state, payload) 

@@ -131,15 +131,15 @@
           <b-col>
               <b-form-group 
               label-size="sm"
-              description="tipo de tecnica"
-              label="Tipo de tecnica"
+              description="Agregar servicio"
+              label="Agregar servicio"
               label-for="input-1">
               <basic-select
                   :selectedOption="form.servicio"
                   @select="changeServicio"
                   size="sm"  
                   :options="serviciosFormat"
-                  placeholder="tipos de servicios">
+                  placeholder="Agregar sevicio">
               </basic-select> 
 
              </b-form-group>
@@ -157,7 +157,7 @@
         <b-table
                 class="mt-1"
                 striped="striped"
-                :items="servicios"
+                :items="servicios_agregados"
                 :fields="fields"
                 :per-page="porPagina"
                 :filter="filter"
@@ -210,8 +210,8 @@ import Swal from "sweetalert2"
 export default {
   name: 'CotizacionesNewDosView',
   computed:{
-    ...mapState('cotizaciones', ['cotiza', 'servicios']),
-    ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat']), 
+    ...mapState('cotizaciones', ['cotiza', 'servicios', 'servicios_agregados']),
+    ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat', 'serviciosFormat']), 
     ...mapState('clientes', ['cliente'])
   },
   components: {
@@ -246,10 +246,10 @@ export default {
           offset :0,
           limit :20
        })
-       await this.getServicios(
+       this.getTipoTecnica(
        {
           loading: this.$loading,
-           toast : this.$toast,
+          toast : this.$toast,
           active : "1",
           tipo : "tecnica",
           offset :0,
@@ -257,32 +257,39 @@ export default {
        }) 
 
 
+      
+
+
   },
   methods:{
-    ...mapActions('cotizaciones', ['getTipoEnsayo', 'getTipoMuestra', 'getTipoDigestion', 'getTipoTecnica']),
+    ...mapActions('cotizaciones', ['getTipoEnsayo', 'getTipoMuestra', 'getTipoDigestion', 'getTipoTecnica', 'getServicios', 'setServicios']),
 
     async changeEnsayo(item)
     {
       this.form.tipo_ensayo.value = item.value 
       this.form.tipo_ensayo.text = item.text
+      await this.changeServicios()
 
     },
     async changeMuestra(item)
     {
       this.form.tipo_muestra.value = item.value 
       this.form.tipo_muestra.text = item.text
+      await this.changeServicios()
 
     },
     async changeDigestion(item)
     {
       this.form.tipo_digestion.value = item.value 
       this.form.tipo_digestion.text = item.text
+      await this.changeServicios()
 
     },
     async changeTecnica(item)
     {
       this.form.tipo_tecnica.value = item.value 
       this.form.tipo_tecnica.text = item.text
+      await this.changeServicios()
 
     },
     async changeServicio(item)
@@ -290,7 +297,31 @@ export default {
       this.form.servicio.value = item.value 
       this.form.servicio.text = item.text
 
+      await this.setServicios(
+        {
+          loading: this.$loading,
+          toast : this.$toast,
+          id: item.value
+       }
+      )
+
     },
+    async changeServicios()
+    {
+      await this.getServicios(
+       {
+          loading: this.$loading,
+          toast : this.$toast,
+          tipo :"servicios",
+          active :1,
+          assay_type_id : this.form.tipo_ensayo.value || null,
+          sample_type_id : this.form.tipo_muestra.value || null,
+          digestion_id : this.form.tipo_digestion.value || null,
+          technique_id : this.form.tipo_tecnica.value || null 
+       }) 
+
+    },
+    
     async agregarServicios()
     {
       console.log('Servicios:: ')
@@ -328,20 +359,27 @@ export default {
   ,data(){
     return { 
 
+      filters: {
+            id: '',
+            issuedBy: '',
+            issuedTo: ''
+      }, 
+      currentPage:1,
+      porPagina: 5,
       loading : false, 
-        isBusy: false,
-        fields: [
+      isBusy: false,
+      fields: [
             {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Valor USD$', class: 'text-center' },
             {  is_select: 'quotation_number', active: false, fil: true, key: 'quotation_number', label: 'Acciones', class: 'text-center'},
             {  is_select: 'company_name', active: false, fil: true, key: 'company_name', label: 'Nombre', class: 'text-center'},
             {  is_select: 'company_name', active: false, fil: true, key: 'project', label: 'Detalle' , class: 'text-center'}
-        ],
+      ],
       form: { 
-        tipo_ensayo: { text: null, value: null, isError: false, error: null, class: "select-default" },
-        tipo_muestra: { text: null, value: null, isError: false, error: null, class: "select-default" },
-        tipo_digestion: { text: null, value: null, isError: false, error: null, class: "select-default" },
-        tipo_tecnica: { text: null, value: null, isError: false, error: null, class: "select-default" },
-        servicio: { text: null, value: null, isError: false, error: null, class: "select-default" },
+      tipo_ensayo: { text: null, value: null, isError: false, error: null, class: "select-default" },
+      tipo_muestra: { text: null, value: null, isError: false, error: null, class: "select-default" },
+      tipo_digestion: { text: null, value: null, isError: false, error: null, class: "select-default" },
+      tipo_tecnica: { text: null, value: null, isError: false, error: null, class: "select-default" },
+      servicio: { text: null, value: null, isError: false, error: null, class: "select-default" },
 
       }
      
