@@ -2,8 +2,7 @@
 $theme-colors: (
     "primary":#42b883
 );
-
-
+ 
 
 
 
@@ -247,6 +246,10 @@ body {
 .container-fluid{
     background-color: #fff;
     min-height: 650px;
+}
+
+.list-group-horizontal {
+    flex-direction: row !important;
 }
 
 

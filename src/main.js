@@ -10,8 +10,8 @@ import Vue2Editor from "vue2-editor"
 
 //import 'bootstrap/dist/css/bootstrap.css'
 //import '@/assets/custom-vars.scss'
-import '@/assets/custom-vars.scss'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import '@/assets/custom-vars.scss'
 
 import VueLoading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'

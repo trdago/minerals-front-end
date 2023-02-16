@@ -7,12 +7,6 @@
   </div>
 </template>
 
-<style>
-
- @import 'assets/custom-vars.scss';
-
-</style>
-
 <script>
 import Headers from './components/header.vue'
 import Footer from './components/footer.vue'
