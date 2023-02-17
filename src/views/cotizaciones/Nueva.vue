@@ -171,9 +171,9 @@
                 > 
  
      
-             <template #cell(company_name)="row">   
+             <template #cell(cost)="row">   
                  <span class="text-darwin">
-                           {{ row.item.company_name }}
+                           {{ row.item.cost }}
                  </span>
              </template> 
        
@@ -365,14 +365,16 @@ export default {
             issuedTo: ''
       }, 
       currentPage:1,
-      porPagina: 5,
+      porPagina: 500,
       loading : false, 
       isBusy: false,
+      filter: null,
+      filterOn: [],
       fields: [
-            {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Valor USD$', class: 'text-center' },
-            {  is_select: 'quotation_number', active: false, fil: true, key: 'quotation_number', label: 'Acciones', class: 'text-center'},
-            {  is_select: 'company_name', active: false, fil: true, key: 'company_name', label: 'Nombre', class: 'text-center'},
-            {  is_select: 'company_name', active: false, fil: true, key: 'project', label: 'Detalle' , class: 'text-center'}
+            {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor USD$', class: 'text-center' },
+            {  is_select: 'extensive_description', active: false, fil: true, key: 'extensive_description', label: 'Acciones', class: 'text-center'},
+            {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-center'},
+            {  is_select: 'description', active: false, fil: true, key: 'description', label: 'Detalle' , class: 'text-center'}
       ],
       form: { 
       tipo_ensayo: { text: null, value: null, isError: false, error: null, class: "select-default" },

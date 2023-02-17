@@ -253,9 +253,11 @@ const actions = {
 
             const { data } =  await axios.post('/api/quotations/cargarservicios', payload)
 
-            console.log('data:: ', data)
+            if(!data.ok) throw { message: 'No se logro cargar los servicios'}
 
-            await commit('SET_SERVICIOS_AGREGADOS', data)
+            console.log('data:: ', data.data)
+
+            await commit('SET_SERVICIOS_AGREGADOS', data.data)
 
             loading.hide()
         } catch (error) {
