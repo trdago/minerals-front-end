@@ -7,6 +7,7 @@ const state = {
     totalRows: 0,
     servicios: [],
     servicios_agregados: [],
+    servicios_elegidos: [],
     tipos_ensayos: [],
     tipos_muestras: [],
     tipos_digestiones: [],
@@ -62,6 +63,15 @@ const mutations = {
     SET_SERVICIOS_AGREGADOS(state, payload)
     {
         state.servicios_agregados = payload
+    },
+    DELETE_SERVICIOS_AGREGADOS(state, payload)
+    {
+        console.log('eliminar::', payload.id)
+        state.servicios_agregados = state.servicios_agregados.filter(ser => ser.id != payload.id)
+    },
+    ADD_SERVICIOS_ELEGIDOS(state, payload)
+    { 
+        state.servicios_elegidos.push(payload)
     }
 
 }
@@ -264,6 +274,38 @@ const actions = {
             payload.toast.error("Error al agregar servicio")
             loading.hide()
             console.error('Error al agregar servicio:: ', error) 
+        } 
+    },
+    async deleteServiceAgregado({commit}, payload) 
+    {   
+
+        let loading = payload.loading.show()
+
+        try { 
+
+            await commit('DELETE_SERVICIOS_AGREGADOS', payload.item)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al eliminar servicio agregado")
+            loading.hide()
+            console.error('Error al eliminar servicio agregado:: ', error) 
+        } 
+    },
+    async addServiceElegido({commit}, payload) 
+    {   
+
+        let loading = payload.loading.show()
+
+        try { 
+
+            await commit('ADD_SERVICIOS_ELEGIDOS', payload.item)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al eliminar servicio agregado")
+            loading.hide()
+            console.error('Error al eliminar servicio agregado:: ', error) 
         } 
     },
     async crearProyecto(state, payload) 

@@ -154,43 +154,118 @@
           </b-col>
         </b-row>
 
-        <b-table
-                class="mt-1"
-                striped="striped"
-                :items="servicios_agregados"
-                :fields="fields"
-                :per-page="porPagina"
-                :filter="filter"
-                :filter-included-fields="filterOn"
-                stacked="md"
-                :busy="isBusy"
-                show-empty
-                small
-                :outlined="true"
-                :bordered="true"
-                > 
- 
+        <b-row class="mt-3"> 
+            <b-col sm="12">
+                <h3>Servicios seleccionados en estado temporal</h3>
+                <b-table
+                    class="mt-1"
+                    striped="striped"
+                    :items="servicios_agregados"
+                    :fields="fields"
+                    :per-page="porPagina"
+                    :filter="filter"
+                    :filter-included-fields="filterOn"
+                    stacked="md"
+                    :busy="isBusy"
+                    show-empty
+                    small
+                    :outlined="true"
+                    :bordered="true"
+                    > 
      
-             <template #cell(cost)="row">   
-                 <span class="text-darwin">
-                           {{ row.item.cost }}
-                 </span>
-             </template> 
-       
-       
- 
-            <template #empty>
-                <div class="text-center my-2"> 
-                    No se encontraron resultados
-                </div>
-            </template>
+         
+                <template #cell(cost)="row">   
+                  <b-input size="sm" v-model="row.item.cost"  ></b-input>
+                  
+                 </template> 
+                 <template #cell(acciones)="row">   
+                    <b-button-group size="sm">
+                        <b-button  @click="eliminarServicio(row.item)"  variant="danger" >Eliminar</b-button>
+                        <b-button @click="elegirServicio(row.item)" >Agregar</b-button>
+                    </b-button-group>
+                 </template> 
+                 <template #cell(name)="row">  
+                    <b-row>
+                        <b-col sm="12" class="text-left">
+                            <b>
+                                {{ row.item.name }} 
+                            </b>
+                        </b-col>
+                        <b-col sm="12">
+                            <small>
+    
+                                {{ row.item.description }}
+                            </small>
+                        </b-col>
+                    </b-row> 
+                  
+                 </template> 
+           
+           
+     
+                <template #empty>
+                    <div class="text-center my-2"> 
+                        No se encontraron resultados
+                    </div>
+                </template>
+    
+                 <template #table-busy>
+                    <div class="text-center my-2"> 
+                    <b-spinner variant="primary" label="Spinning"></b-spinner> 
+                    </div>
+                </template>
+            </b-table>
+            </b-col>
+      
+        </b-row>
+        <hr>
+        <b-row class="mt-3"> 
+            <b-col sm="12">
+                <h3>Servicios Agregados a la Cotización</h3>
+                <b-table
+                    class="mt-1"
+                    striped="striped"
+                    :items="servicios_elegidos"
+                    :fields="fields_elegidos"
+                    :per-page="porPagina"
+                    :filter="filter"
+                    :filter-included-fields="filterOn"
+                    stacked="md"
+                    :busy="isBusy"
+                    show-empty
+                    small
+                    :outlined="true"
+                    :bordered="true"
+                    > 
+     
+         
+                <template #cell(cost)="row">   
+                  {{ row.item.cost }}
+                 </template>  
+                 <template #cell(name)="row">  
+                     {{ row.item.name }}  
+                 </template> 
+           
+           
+     
+                <template #empty>
+                    <div class="text-center my-2"> 
+                        No se encontraron resultados
+                    </div>
+                </template>
+    
+                 <template #table-busy>
+                    <div class="text-center my-2"> 
+                    <b-spinner variant="primary" label="Spinning"></b-spinner> 
+                    </div>
+                </template>
+            </b-table>
+            </b-col>
+      
+        </b-row>
 
-             <template #table-busy>
-                <div class="text-center my-2"> 
-                <b-spinner variant="primary" label="Spinning"></b-spinner> 
-                </div>
-            </template>
-        </b-table>
+
+
       </b-card>
     </b-card-group>
  
@@ -210,7 +285,7 @@ import Swal from "sweetalert2"
 export default {
   name: 'CotizacionesNewDosView',
   computed:{
-    ...mapState('cotizaciones', ['cotiza', 'servicios', 'servicios_agregados']),
+    ...mapState('cotizaciones', ['cotiza', 'servicios', 'servicios_agregados', 'servicios_elegidos']),
     ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat', 'serviciosFormat']), 
     ...mapState('clientes', ['cliente'])
   },
@@ -262,8 +337,36 @@ export default {
 
   },
   methods:{
-    ...mapActions('cotizaciones', ['getTipoEnsayo', 'getTipoMuestra', 'getTipoDigestion', 'getTipoTecnica', 'getServicios', 'setServicios']),
+    ...mapActions('cotizaciones', ['getTipoEnsayo', 'getTipoMuestra', 'getTipoDigestion', 'getTipoTecnica', 'getServicios', 'setServicios', 'deleteServiceAgregado', 'addServiceElegido']),
 
+    async elegirServicio(item)
+    {
+        console.log('item::', item)
+        const { value } = await Swal.fire({ text: '¿Está seguro que desea agregar este análisis?',  
+                        type: 'success', 
+                        confirmButtonText: 'Aceptar',
+                        showCancelButton: false
+                    })
+
+    if(!value) return console.error('no se coloco nombre')
+
+    await this.addServiceElegido(
+    {
+        loading: this.$loading,
+        toast : this.$toast,
+        item
+    }) 
+    }, 
+    async eliminarServicio(item)
+    { 
+        await this.deleteServiceAgregado(
+        {
+            loading: this.$loading,
+            toast : this.$toast,
+            item
+        }) 
+
+    }, 
     async changeEnsayo(item)
     {
       this.form.tipo_ensayo.value = item.value 
@@ -295,15 +398,7 @@ export default {
     async changeServicio(item)
     {
       this.form.servicio.value = item.value 
-      this.form.servicio.text = item.text
-
-      await this.setServicios(
-        {
-          loading: this.$loading,
-          toast : this.$toast,
-          id: item.value
-       }
-      )
+      this.form.servicio.text = item.text 
 
     },
     async changeServicios()
@@ -323,35 +418,14 @@ export default {
     },
     
     async agregarServicios()
-    {
-      console.log('Servicios:: ')
-
-      await this.getCotizaciones(
-       {
+    {  
+      await this.setServicios(
+        {
           loading: this.$loading,
           toast : this.$toast,
-          company_id: this.cotiza.company_id || 0 ,
-          project_id: this.cotiza.project_id || 0,
-          active : "1",
-          tipo : "tecnica",
-          offset :0,
-          limit :20
-       }) 
-      const { value } = await Swal.fire({ text: 'Agregar nuevo proyecto', 
-                        input: 'text',
-                        inputAttributes: {
-                          placeholder: 'Nombre del proyecto',
-                          autocapitalize: 'off'
-                        },
-                        type: 'success', 
-                        confirmButtonText: 'Aceptar',
-                        showCancelButton: false
-                    })
-
-    if(!value) return console.error('no se coloco nombre')
-
-
-    console.log('Paso:: ');
+          id: this.form.servicio.value
+       }
+      ) 
 
     }
 
@@ -372,9 +446,18 @@ export default {
       filterOn: [],
       fields: [
             {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor USD$', class: 'text-center' },
-            {  is_select: 'extensive_description', active: false, fil: true, key: 'extensive_description', label: 'Acciones', class: 'text-center'},
-            {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-center'},
+            {  is_select: 'Acciones', active: false, fil: true, key: 'Acciones', label: 'Acciones', class: 'text-center'},
+            {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-left'},
             {  is_select: 'description', active: false, fil: true, key: 'description', label: 'Detalle' , class: 'text-center'}
+      ],
+      fields_elegidos: [
+            {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-center' },
+            {  is_select: 'Tipo', active: false, fil: true, key: 'Tipo', label: 'Tipo', class: 'text-center'},
+            {  is_select: 'Método', active: false, fil: true, key: 'Método', label: 'Método', class: 'text-center'},
+            {  is_select: 'Técnica', active: false, fil: true, key: 'Técnica', label: 'Técnica', class: 'text-center'},
+            {  is_select: 'Muestra', active: false, fil: true, key: 'Muestra', label: 'Muestra', class: 'text-center'},
+            {  is_select: 'Digestión', active: false, fil: true, key: 'Digestión', label: 'Digestión', class: 'text-center'},
+            {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor', class: 'text-center'} 
       ],
       form: { 
       tipo_ensayo: { text: null, value: null, isError: false, error: null, class: "select-default" },
