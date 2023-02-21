@@ -125,32 +125,25 @@
              </b-form-group>
                
           </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col>
-              <b-form-group 
-              label-size="sm"
-              description="Agregar servicio"
-              label="Agregar servicio"
-              label-for="input-1">
+        </b-row> 
+        <b-row class="mt-4"> 
+          <b-col sm="12">
+          <b-button-group class="col-sm-12"> 
               <basic-select
                   :selectedOption="form.servicio"
                   @select="changeServicio"
                   size="sm"  
                   :options="serviciosFormat"
                   placeholder="Agregar sevicio">
-              </basic-select> 
-
-             </b-form-group>
-
-             
-               
+              </basic-select>  
+                <b-button @click="agregarServicios" variant="dark" size="sm">Agregar</b-button>
+            </b-button-group>
           </b-col>
         </b-row>
-        <b-row>
-          <b-col class="text-right">
-            <b-button @click="agregarServicios" link primary size="sm">Agregar servicios de una cotizacion existente</b-button>
+
+        <b-row class="mt-4">
+          <b-col sm="12">
+            <b-button size="sm" variant="dark">Importar servicios desde una cotización existente</b-button>
           </b-col>
         </b-row>
 
@@ -181,7 +174,7 @@
                  <template #cell(acciones)="row">   
                     <b-button-group size="sm">
                         <b-button  @click="eliminarServicio(row.item)"  variant="danger" >Eliminar</b-button>
-                        <b-button @click="elegirServicio(row.item)" >Agregar</b-button>
+                        <b-button variant="dark" @click="elegirServicio(row.item)" >Agregar</b-button>
                     </b-button-group>
                  </template> 
                  <template #cell(name)="row">  
@@ -197,6 +190,29 @@
                                 {{ row.item.description }}
                             </small>
                         </b-col>
+                    </b-row> 
+                  
+                 </template> 
+                 <template #cell(fases)="row">  
+                    <b-row >
+                      <b-col sm="12"><b>Tipo:</b></b-col>
+                      <b-col sm="12">{{ row.item.assay_name }} </b-col>
+                      <b-col sm="12"><b>Método:</b></b-col>
+                      <b-col sm="12">{{ row.item.method_name }} </b-col>
+                      <b-col sm="12"><b>Técnica:</b></b-col>
+                      <b-col sm="12">{{ row.item.technique_name }} </b-col>
+                      <b-col sm="12"><b>Tipo de muestra:</b></b-col>
+                      <b-col sm="12">{{ row.item.sample_type_name }} </b-col>
+                      <b-col sm="12"><b>Digestión:</b></b-col>
+                      <b-col sm="12">{{ row.item.digestion_name }} </b-col>
+                      <b-col sm="12"><b>Volumen Nominal:</b></b-col>
+                      <b-col sm="12">{{ row.item.nominal_volume }} </b-col>
+                      <b-col sm="12"><b>Peso Volumétrico:</b></b-col>
+                      <b-col sm="12">{{ row.item.nominal_weight }} {{ row.item.mass_name }}</b-col>
+                      <b-col sm="12"><b>Elemento:</b> {{ row.item.elemento.symbol }} </b-col> 
+                      <b-col sm="12"> 
+                        <b>  Fases: </b> <span v-for="(f ,i) in row.item.fases" :key="i"> <span v-if="i>0">,</span> {{ f.fase }}</span> 
+                       </b-col> 
                     </b-row> 
                   
                  </template> 
@@ -218,10 +234,13 @@
             </b-col>
       
         </b-row>
-        <hr>
+
+      </b-card> 
+      <h3 class="mt-4">Servicios Agregados a la Cotización</h3>
+      <hr>
+      <b-card>
         <b-row class="mt-3"> 
             <b-col sm="12">
-                <h3>Servicios Agregados a la Cotización</h3>
                 <b-table
                     class="mt-1"
                     striped="striped"
@@ -264,10 +283,16 @@
       
         </b-row>
 
-
-
       </b-card>
     </b-card-group>
+        <b-row class="mb-4 mt-4">
+          <b-col>
+            <b-button @click="finish()" variant="dark">FINALIZAR</b-button> <b-button variant="link">Cancelar creación</b-button>
+          </b-col>
+        </b-row>
+
+
+
  
   </div>
 </template>
@@ -281,6 +306,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { BasicSelect } from 'vue-search-select'
 import Swal from "sweetalert2"
+import route from './../../router'
 
 export default {
   name: 'CotizacionesNewDosView',
@@ -337,11 +363,10 @@ export default {
 
   },
   methods:{
-    ...mapActions('cotizaciones', ['getTipoEnsayo', 'getTipoMuestra', 'getTipoDigestion', 'getTipoTecnica', 'getServicios', 'setServicios', 'deleteServiceAgregado', 'addServiceElegido']),
+    ...mapActions('cotizaciones', ['getTipoEnsayo', 'getTipoMuestra', 'getTipoDigestion', 'getTipoTecnica', 'getServicios', 'setServicios', 'deleteServiceAgregado', 'addServiceElegido', 'finalizar']),
 
     async elegirServicio(item)
-    {
-        console.log('item::', item)
+    { 
         const { value } = await Swal.fire({ text: '¿Está seguro que desea agregar este análisis?',  
                         type: 'success', 
                         confirmButtonText: 'Aceptar',
@@ -354,7 +379,9 @@ export default {
     {
         loading: this.$loading,
         toast : this.$toast,
-        item
+        item,
+        quotation_id: this.cotiza.id
+
     }) 
     }, 
     async eliminarServicio(item)
@@ -363,10 +390,32 @@ export default {
         {
             loading: this.$loading,
             toast : this.$toast,
-            item
+            item 
+           
         }) 
 
     }, 
+    async finish()
+    { 
+      const { value } = await Swal.fire({ text: '¿Está seguro que desea terminar de agregar análisis?',  
+                        type: 'success', 
+                        confirmButtonText: 'Aceptar',
+                        showCancelButton: false
+                    })
+
+    if(!value) return console.error('no se acepto')
+
+      
+      await this.finalizar(
+        {
+          loading: this.$loading,
+          toast : this.$toast,
+          quotation_id: this.cotiza.id,
+          active : 1
+        })
+      await route.push({name: 'cotizaciones'})
+
+    },
     async changeEnsayo(item)
     {
       this.form.tipo_ensayo.value = item.value 
@@ -417,13 +466,18 @@ export default {
 
     },
     
+  
     async agregarServicios()
     {  
       await this.setServicios(
         {
           loading: this.$loading,
-          toast : this.$toast,
-          id: this.form.servicio.value
+          toast : this.$toast, 
+          active: '1', 
+          tipo: 'servicio',
+          assay_id: this.form.servicio.value,
+          offset : 0,
+          limit:10
        }
       ) 
 
@@ -448,15 +502,15 @@ export default {
             {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor USD$', class: 'text-center' },
             {  is_select: 'Acciones', active: false, fil: true, key: 'Acciones', label: 'Acciones', class: 'text-center'},
             {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-left'},
-            {  is_select: 'description', active: false, fil: true, key: 'description', label: 'Detalle' , class: 'text-center'}
+            {  is_select: 'description', active: false, fil: true, key: 'fases', label: 'Detalle' , class: 'text-left'}
       ],
       fields_elegidos: [
             {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-center' },
-            {  is_select: 'Tipo', active: false, fil: true, key: 'Tipo', label: 'Tipo', class: 'text-center'},
-            {  is_select: 'Método', active: false, fil: true, key: 'Método', label: 'Método', class: 'text-center'},
-            {  is_select: 'Técnica', active: false, fil: true, key: 'Técnica', label: 'Técnica', class: 'text-center'},
-            {  is_select: 'Muestra', active: false, fil: true, key: 'Muestra', label: 'Muestra', class: 'text-center'},
-            {  is_select: 'Digestión', active: false, fil: true, key: 'Digestión', label: 'Digestión', class: 'text-center'},
+            {  is_select: 'Tipo', active: false, fil: true, key: 'assay_name', label: 'Tipo', class: 'text-center'},
+            {  is_select: 'Método', active: false, fil: true, key: 'method_name', label: 'Método', class: 'text-center'},
+            {  is_select: 'Técnica', active: false, fil: true, key: 'technique_name', label: 'Técnica', class: 'text-center'},
+            {  is_select: 'Muestra', active: false, fil: true, key: 'sample_type_name', label: 'Muestra', class: 'text-center'},
+            {  is_select: 'Digestión', active: false, fil: true, key: 'digestion_name', label: 'Digestión', class: 'text-center'},
             {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor', class: 'text-center'} 
       ],
       form: { 

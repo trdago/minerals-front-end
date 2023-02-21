@@ -261,7 +261,7 @@ const actions = {
 
         try {
 
-            const { data } =  await axios.post('/api/quotations/cargarservicios', payload)
+            const { data } =  await axios.post('/api/quotations', payload)
 
             if(!data.ok) throw { message: 'No se logro cargar los servicios'}
 
@@ -298,6 +298,16 @@ const actions = {
         let loading = payload.loading.show()
 
         try { 
+            console.log('payload::', payload)
+
+            const { data } =  await axios.post('/api/quotations/new/detail', {
+                active : 0,
+                quotation_id : payload.quotation_id,
+                assay_id : payload.item.id,
+                price : payload.item.cost
+            })
+
+            if(!data.ok) throw { message: 'No se logro agregar el item'}
 
             await commit('ADD_SERVICIOS_ELEGIDOS', payload.item)
 
@@ -349,6 +359,26 @@ const actions = {
             payload.toast.error("Error no se creo cotizacion")
             loading.hide()
             console.error('Error No  se crear cotizacion: ', error) 
+        }
+    
+    },
+    async finalizar({commit}, payload) 
+    {   
+        console.log('payload finish::', payload, commit)
+        let loading = payload.loading.show()
+
+        try {
+            const { data } =  await axios.post('/api/quotations/new/end', payload) 
+
+            if(!data.ok) throw { message: 'No se pudo new end'} 
+
+            loading.hide() 
+            payload.toast.success("Cotizacion Finalizada con exito") 
+
+        } catch (error) {
+            payload.toast.error("Error en el new end")
+            loading.hide()
+            console.error('Error  en el new end: ', error) 
         }
     
     }
