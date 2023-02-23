@@ -31,8 +31,7 @@
             <b-input-group 
             :class="{ 'is-invalid': $v.form.cliente_rut.value.$invalid }"  
             size="sm">
-                <b-form-input 
-                :ariaInvalid="$v.form.cliente_rut.value.$invalid"
+                <b-form-input  
                 :class="{ 'is-invalid': $v.form.cliente_rut.value.$invalid }" 
                  v-model="form.cliente_rut.value" trim></b-form-input>
             <b-input-group-append>
@@ -79,7 +78,10 @@
               description="Destinatario"
               label="Destinatario"
               label-for="input-1">
-              <b-form-input size="sm" id="input-1" v-model="form.destinatario.value"  trim></b-form-input>
+              <b-form-input :class="{ 'is-invalid': $v.form.destinatario.value.$invalid }"  size="sm" id="input-1" v-model="form.destinatario.value"  trim></b-form-input>
+              <div class="invalid-feedback">
+                El Destinatario es requerido
+              </div>
             </b-form-group> 
 
           </b-col>
@@ -113,6 +115,7 @@
               label-for="input-1">
               
               <basic-select 
+                  :isError="$v.form.proyecto.value.$invalid"
                   :selectedOption="form.proyecto"
                   :disabled="proyectosFormat.length == 0"
                   @select="changeProyecto"
@@ -154,6 +157,7 @@
 
               <basic-select
                   :selectedOption="form.condiciones"
+                  :isError="$v.form.condiciones.value.$invalid"
                   @select="changeCondiciones"
                   size="sm"  
                   :options="condicionesFormat"
@@ -219,7 +223,9 @@
               description="Desde"
               label="Días desde"
               label-for="input-datapike">
-              <b-form-datepicker id="input-datapike" v-model="form.desde.value" class="mb-2"></b-form-datepicker>
+              <b-form-datepicker
+              :class="{ 'is-invalid': $v.form.desde.value.$invalid }"  
+              id="input-datapike" v-model="form.desde.value" class="mb-2"></b-form-datepicker>
 
             </b-form-group> 
               <b-form-group 
@@ -227,7 +233,9 @@
               description="hasta"
               label="Días hasta"
               label-for="input-datapike2">
-              <b-form-datepicker id="input-datapike2" v-model="form.hasta.value" class="mb-2"></b-form-datepicker>
+              <b-form-datepicker 
+              :class="{ 'is-invalid': $v.form.hasta.value.$invalid }"  
+              id="input-datapike2" v-model="form.hasta.value" class="mb-2"></b-form-datepicker>
 
             </b-form-group> 
           </b-col> 
@@ -250,11 +258,12 @@
               label="Moneda"
               label-for="input-1">
                <basic-select
+                  :isError="$v.form.moneda.value.$invalid"
                   :selectedOption="form.moneda"
                   @select="changeMonedas"
                   size="sm"  
                   :options="monedasFormat"
-                  placeholder="Condiciones">
+                  placeholder="Elegir moneda">
               </basic-select> 
             </b-form-group>
           </b-col> 
@@ -281,7 +290,6 @@
 <script>
 // @ is an alias to /src
 import { mapState, mapActions, mapGetters } from 'vuex'
-import route from '../../router'
 import { BasicSelect } from 'vue-search-select'
 import { VueEditor } from "vue2-editor"
 import Swal from "sweetalert2"
@@ -465,7 +473,7 @@ export default {
     async crear()
     {
 
-       this.loading.hide()
+      this.loading.hide()
       const payload = {}
 
 
@@ -490,7 +498,7 @@ export default {
 
       await this.crearCotizacion(payload) 
 
-       await route.push({name: 'cotizaciones_new_dos'})
+      
 
          
     }
@@ -498,6 +506,12 @@ export default {
   validations :{   
         form: {
           cliente_rut : { value: { required } }, 
+          moneda : { value: { required } }, 
+          desde : { value: { required } }, 
+          hasta : { value: { required } }, 
+          condiciones : { value: { required } }, 
+          destinatario : { value: { required } }, 
+          proyecto : { value: { required } }, 
           especificaciones : { value: { required }}, 
         }
   }

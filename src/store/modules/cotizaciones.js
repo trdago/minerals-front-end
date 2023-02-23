@@ -1,4 +1,6 @@
 import axios from 'axios'
+import route from '../../router'
+
 const state = {
     cotizaciones: [],
     condiciones: [],
@@ -74,6 +76,10 @@ const mutations = {
     ADD_SERVICIOS_ELEGIDOS(state, payload)
     { 
         state.servicios_elegidos.push(payload)
+    },
+    CLEAR_SERVICIOS_ELEGIDOS(state)
+    { 
+        state.servicios_elegidos= []
     },
     SET_MONEDA(state, payload)
     { 
@@ -367,6 +373,10 @@ const actions = {
             payload.toast.success("Cotizacion creada")
             console.log('NUEVA COTIZACION::::', data)
             await commit('SET_COTIZACION', data.data[0])
+            await commit('SET_SERVICIOS_AGREGADOS', [])
+            await commit('CLEAR_SERVICIOS_ELEGIDOS')
+
+            await route.push({name: 'cotizaciones_new_dos'})
             return data.data[0]
 
         } catch (error) {
@@ -388,6 +398,8 @@ const actions = {
 
             loading.hide() 
             payload.toast.success("Cotizacion Finalizada con exito") 
+
+            await commit('SET_COTIZACION', null)
 
         } catch (error) {
             payload.toast.error("Error en el new end")
