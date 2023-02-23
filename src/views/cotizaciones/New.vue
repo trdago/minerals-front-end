@@ -23,18 +23,25 @@
             </b-form-group>
           </b-col>
           <b-col> 
-            <b-form-group 
-           
+            <b-form-group  
             label-size="sm"
             description="Run del cliente"
             label="Rut Cliente"
             label-for="input-1">
-            <b-input-group  size="sm">
-                <b-form-input v-model="form.cliente_rut.value" trim></b-form-input>
+            <b-input-group 
+            :class="{ 'is-invalid': $v.form.cliente_rut.value.$invalid }"  
+            size="sm">
+                <b-form-input 
+                :ariaInvalid="$v.form.cliente_rut.value.$invalid"
+                :class="{ 'is-invalid': $v.form.cliente_rut.value.$invalid }" 
+                 v-model="form.cliente_rut.value" trim></b-form-input>
             <b-input-group-append>
               <b-button @click="comprobarCliente" :disabled="!form.cliente_rut.value"  variant="pdarwin">Comprobar</b-button>
             </b-input-group-append>
           </b-input-group>
+          <div class="invalid-feedback">
+                El RUT es requerido
+              </div>
           </b-form-group>
 
 
@@ -157,18 +164,20 @@
 
         </b-row> 
         <b-row> 
-          <b-col> 
-        
+          <b-col>   
             <b-form-group 
-              label-size="sm"
-              description="Condiciones especificas"
-              label="Condiciones especificas"
-              label-for="input-1">
-              <vue-editor
+            label-size="sm"
+            description="Condiciones especificas"
+            label="Condiciones especificas"  
+            label-for="input-1">
+            <vue-editor
+              :class="{ 'is-invalid': $v.form.especificaciones.value.$invalid }"  
               :editor-toolbar="customToolbar"
                v-model="form.especificaciones.value">
               </vue-editor>
-             
+              <div class="invalid-feedback">
+                Las especificaciones son requeridas
+              </div>
   
             </b-form-group>
 
@@ -255,13 +264,13 @@
     <b-row class="mt-1 mb-4">
       <b-col>
         <b-button 
+        :disabled="$v.form.$invalid"
         @click="crear()"
         variant="pdarwin">
         Crear cotización</b-button>
       </b-col>
     </b-row>
-
-    {{ form.cotizacion.value}}
+ 
   </div>
 </template>
 
@@ -276,6 +285,12 @@ import route from '../../router'
 import { BasicSelect } from 'vue-search-select'
 import { VueEditor } from "vue2-editor"
 import Swal from "sweetalert2"
+
+// const { format, validate, clean  } = require('rut.js')
+const { format, clean, validate } = require('rut.js')
+
+// import { required, email, sameAs, maxLength } from 'vuelidate/lib/validators'
+import { required } from 'vuelidate/lib/validators'
 
 
 
@@ -300,7 +315,7 @@ export default {
     console.log('beforeCreate..')
     this.loading = this.$loading.show()
 
-  },
+  }, 
   async mounted()
   {
        await this.searchCondiciones(
@@ -321,12 +336,9 @@ export default {
          tipo: "monedas",
          offset: 0,
          limit: 100
-       })
-
-       console.log('paso monedas')
+       }) 
 
     this.loading.hide()
-    console.log('mounted::', this.loading)
     const payload = {}
 
 
@@ -349,7 +361,7 @@ export default {
     ...mapActions('monedas', ['getAllMonedas']),
     ...mapActions('clientes', ['getClientes', 'validaCliente']), 
     ...mapActions('proyectos', ['getProyectos']), 
-    ...mapActions('cotizaciones', ['searchCondiciones', 'crearProyecto', 'crearCotizacion']), 
+    ...mapActions('cotizaciones', ['searchCondiciones', 'crearProyecto', 'crearCotizacion', 'setModena']), 
 
     async newProyecto()
     {
@@ -389,6 +401,8 @@ export default {
     async comprobarCliente()
     {
 
+      this.form.cliente_rut.value = format(this.form.cliente_rut.value)
+
       this.loading.hide()
       const payload = {}
 
@@ -401,16 +415,20 @@ export default {
       payload.active= '1'
       payload.offset= 1
       payload.limit= 1
-      payload.rut= Number((this.form.cliente_rut.value).split('-')[0])
+
+      if(!validate(this.form.cliente_rut.value)) 
+        return  this.$toast.error('Rut de cliente invalido')
+
+      // payload.rut= Number((this.form.cliente_rut.value).split('-')[0])
+      payload.rut= clean(this.form.cliente_rut.value)
+      payload.rut= payload.rut.substr(0, payload.rut.length - 1)
 
       const cliente = await this.validaCliente(payload)
 
       
       this.form.cliente_nombre.value = cliente.name
       this.form.cliente_active.value = cliente.active ? 'Activo':'Desactivado'
-      this.form.cotizacion.value = cliente.quotation_number
-
-      console.log('form:: ', this.form)
+      this.form.cotizacion.value = cliente.quotation_number 
     },
     async changeCliente(item)
     {
@@ -422,7 +440,7 @@ export default {
       const cliente  = this.clientes.find(cl => cl.id ==item.value)
 
       console.log('cliente::', cliente)
-      this.form.cliente_rut.value =`${ cliente.rut }-${ cliente.dv }`
+      this.form.cliente_rut.value = format(`${ cliente.rut }${ cliente.dv }`)
 
       console.log('form:: ', this.form)
     },
@@ -441,6 +459,7 @@ export default {
     {
       this.form.moneda.value = item.value
       this.form.moneda.text = item.text
+      this.setModena(this.form.moneda.text)
     },
 
     async crear()
@@ -475,9 +494,15 @@ export default {
 
          
     }
+  },
+  validations :{   
+        form: {
+          cliente_rut : { value: { required } }, 
+          especificaciones : { value: { required }}, 
+        }
   }
   ,data(){
-    return {
+    return { 
       loading: null,
       empresas: [],
       form: {

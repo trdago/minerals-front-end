@@ -12,6 +12,8 @@ const state = {
     tipos_muestras: [],
     tipos_digestiones: [],
     tipos_tecnicas: [],
+    all_cotizaciones: [],
+    stringMoneda:' ',
     pageOptions: [
         {value: 5, text: '5'},
         {value: 10, text: '10'},
@@ -72,12 +74,25 @@ const mutations = {
     ADD_SERVICIOS_ELEGIDOS(state, payload)
     { 
         state.servicios_elegidos.push(payload)
+    },
+    SET_MONEDA(state, payload)
+    { 
+        state.stringMoneda = payload
+    },
+    SET_ALL_COTIZACIONES(state, payload)
+    { 
+        state.all_cotizaciones = payload
     }
 
 }
 
 const actions = {
 
+    async setModena({commit}, payload )
+    {
+        await commit('SET_MONEDA', payload)
+
+    },
     async download(state, payload) 
     {   
         let loading = payload.loading.show()
@@ -298,7 +313,6 @@ const actions = {
         let loading = payload.loading.show()
 
         try { 
-            console.log('payload::', payload)
 
             const { data } =  await axios.post('/api/quotations/new/detail', {
                 active : 0,
@@ -381,6 +395,28 @@ const actions = {
             console.error('Error  en el new end: ', error) 
         }
     
+    },
+    async getAllCotizaciones({commit}, payload) 
+    {    
+        let loading = payload.loading.show()
+
+        try {
+            const { data } =  await axios.get('/api/quotations/list') 
+
+            if(!data.ok) throw { message: 'No se pudo obtener todas la cotizaciones'} 
+
+
+            await commit('SET_ALL_COTIZACIONES', data.data)
+
+            loading.hide() 
+             
+
+        } catch (error) {
+            payload.toast.error("No se pudo obtener todas la cotizacione")
+            loading.hide()
+            console.error('No se pudo obtener todas la cotizacione: ', error) 
+        }
+    
     }
 }
 
@@ -397,13 +433,11 @@ const getters= {
 
         if(!state.tipos_ensayos) return []
 
-
         return state.tipos_ensayos.map(item => ({ value: item.id, text: item.name }))
     },
     muestrasFormat: state => {
 
         if(!state.tipos_muestras) return []
-
 
         return state.tipos_muestras.map(item => ({ value: item.id, text: item.name }))
     },
@@ -411,13 +445,11 @@ const getters= {
 
         if(!state.tipos_digestiones) return []
 
-
         return state.tipos_digestiones.map(item => ({ value: item.id, text: item.name }))
     },
     tecnicasFormat: state => {
 
         if(!state.tipos_tecnicas) return []
-
 
         return state.tipos_tecnicas.map(item => ({ value: item.id, text: item.name }))
     },
@@ -425,15 +457,19 @@ const getters= {
 
         if(!state.cotizaciones_historicas) return []
 
-
         return state.cotizaciones_historicas.map(item => ({ value: item.id, text: item.name }))
     },
     serviciosFormat: state => {
 
         if(!state.servicios) return []
 
-
         return state.servicios.map(item => ({ value: item.id, text: item.name }))
+    },
+    allCotizacionesFormat: state => {
+
+        if(!state.all_cotizaciones) return []
+
+        return state.all_cotizaciones.map(item => ({ value: item.id, text: `${ item.quotation_number } - ${ item.company_name } ${ item.estado } ` }))
     }
 }
 
