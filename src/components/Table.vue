@@ -193,7 +193,7 @@
                    <b-badge v-if="row.item.state_id == 4" class="bg-seondary">Anulada</b-badge>  
                
              </template>
-             <template #cell(acciones)="">   
+             <template #cell(acciones)="row">   
                 <b-button-group size="sm">
                     <b-button >ver</b-button>
                     <b-dropdown size="sm" variant="secondary">
@@ -202,8 +202,8 @@
                     </template> 
                     <b-dropdown-item  href="">Nueva versión</b-dropdown-item>
                     <b-dropdown-item  href="">Ver historial</b-dropdown-item>
-                    <b-dropdown-item  href="">Descargar PDF</b-dropdown-item> 
-                    <b-dropdown-item  href="">Descargar WORD</b-dropdown-item> 
+                    <b-dropdown-item  @click="descargarPDF(row.item)">Descargar PDF</b-dropdown-item> 
+                    <b-dropdown-item  @click="descargarDOC(row.item)">Descargar WORD</b-dropdown-item> 
                     <b-dropdown-item  href="">Anular</b-dropdown-item> 
                     <b-dropdown-item  href="">Editar estado interno</b-dropdown-item> 
                     <b-dropdown-item  href="">Adjuntar</b-dropdown-item> 
@@ -254,6 +254,7 @@
 // @ is an alias to /src
 import { mapState, mapActions } from 'vuex'
 import { ModelSelect } from 'vue-search-select'
+import { downloadPDFBase64 } from './../util/pdfHelper'
 
 export default {
     name: 'TableComponent',
@@ -279,10 +280,46 @@ export default {
         this.filters['active'] = 2
     },
     methods: {
-        ...mapActions('cotizaciones', ['searchFilter']),
-        async search()
+        ...mapActions('cotizaciones', ['searchFilter', 'download']),
+
+        async descargarPDF(item)
         {
-            console.log("this.filter", this.filters)
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.active = 1
+            payload.id = item.id
+            payload.download = 'pdf' 
+
+            const data =  await this.download(payload)  
+ 
+            await downloadPDFBase64([
+            {
+                documento: data, 
+                contentType: 'application/pdf',
+                nombre: `${ item.id }.pdf`
+            }]) 
+        },
+        async descargarDOC(item)
+        {
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.active = 1
+            payload.id = item.id
+            payload.download = 'word' 
+
+            const data =  await this.download(payload)  
+ 
+            await downloadPDFBase64([
+            {
+                documento: data, 
+                contentType: 'application/msword',
+                nombre: `${ item.id }.doc`
+            }]) 
+        },
+        async search()
+        { 
             const payload = {}
             payload.loading = this.$loading
             payload.toast = this.$toast

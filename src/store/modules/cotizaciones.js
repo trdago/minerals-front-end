@@ -99,19 +99,26 @@ const actions = {
         await commit('SET_MONEDA', payload)
 
     },
-    async download(state, payload) 
+    async download({commit}, payload) 
     {   
         let loading = payload.loading.show()
 
-        try {
+        try { 
 
-            // todo
+            const { data } =  await axios.post('/api/quotations/download', payload)
+
+            if(!data.ok) throw { message: 'No se logro descargar el documento'} 
+
+            console.info('Commit::', commit)
 
             loading.hide()
+
+            return data.data
+
         } catch (error) {
-            payload.toast.error("Error al buscar las cotizaciones")
+            payload.toast.error("Error al   descargar el documento")
             loading.hide()
-            console.error('Error al buscar las cotizaciones:: ', error) 
+            console.error('Error no se logro descargar el documento:: ', error) 
         } 
     },
     async searchFilter({commit}, payload) 
