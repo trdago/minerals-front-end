@@ -11,6 +11,7 @@ import CotizacionesNewDosView from '../views/cotizaciones/Nueva'
 import CotizacionesAprobarView from '../views/cotizaciones/Aprobar'
 import CotizacionListPorVencerView from '../views/cotizaciones/Vencer'
 import CotizacionVerView from '../views/cotizaciones/Ver'
+import CotizacionView from '../views/cotizaciones/View'
 import auth from './../middleware/auth.js'
 import logout from './../middleware/logout.js'
 
@@ -88,6 +89,12 @@ const routes = [
         path: '/quotations/por_vencer',
         name: 'cotizaciones_ver',
         component: CotizacionVerView,
+        beforeEnter: auth,
+      },
+      {
+        path: '/quotations/view/:id',
+        name: 'cotizaciones_view',
+        component: CotizacionView,
         beforeEnter: auth,
       },
     ]

@@ -195,7 +195,7 @@
              </template>
              <template #cell(acciones)="row">   
                 <b-button-group size="sm">
-                    <b-button >ver</b-button>
+                    <b-button @click="ver(row.item)">ver</b-button>
                     <b-dropdown size="sm" variant="secondary">
                     <template #button-content>
                         <span class="sr-only">Opciones</span>
@@ -255,6 +255,7 @@
 import { mapState, mapActions } from 'vuex'
 import { ModelSelect } from 'vue-search-select'
 import { downloadPDFBase64 } from './../util/pdfHelper'
+import router from './../router'
 
 export default {
     name: 'TableComponent',
@@ -282,6 +283,18 @@ export default {
     methods: {
         ...mapActions('cotizaciones', ['searchFilter', 'download']),
 
+        async ver(item)
+        {
+            console.log('VER:: ', item)
+            
+            router.push({
+                name: 'cotizaciones_view',  
+                params: {
+                        id: '1314'
+                }} 
+            )
+        },
+
         async descargarPDF(item)
         {
             const payload = {}
@@ -292,7 +305,7 @@ export default {
             payload.download = 'pdf' 
 
             const data =  await this.download(payload)  
- 
+
             await downloadPDFBase64([
             {
                 documento: data, 

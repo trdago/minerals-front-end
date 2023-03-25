@@ -304,6 +304,27 @@ const actions = {
             console.error('Error al agregar servicio:: ', error) 
         } 
     },
+    async setServiciosAll({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } =  await axios.post('/api/quotations/cargarservicios', payload)
+
+            if(!data.ok) throw { message: 'No se logro cargar los servicios'}
+
+            console.log('data crgaservicio:: ', data.data)
+
+            await commit('SET_SERVICIOS_AGREGADOS', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al agregar servicio")
+            loading.hide()
+            console.error('Error al agregar servicio:: ', error) 
+        } 
+    },
     async deleteServiceAgregado({commit}, payload) 
     {   
 

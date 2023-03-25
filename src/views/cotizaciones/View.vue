@@ -325,10 +325,10 @@
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { BasicSelect } from 'vue-search-select'
 import Swal from "sweetalert2"
-import route from './../../router'
+import route from '../../router'
 
 export default {
-  name: 'CotizacionesNewDosView',
+  name: 'CotizacionView',
   computed:{
     ...mapState('cotizaciones', ['cotiza', 'servicios', 'servicios_agregados', 'servicios_elegidos', 'stringMoneda']),
     ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat', 'serviciosFormat', 'allCotizacionesFormat']), 
