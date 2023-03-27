@@ -101,7 +101,7 @@ const actions = {
     },
     async download({commit}, payload) 
     {   
-        let loading = payload.loading.show()
+        let loading = payload.loading.show() 
 
         try { 
 
@@ -150,6 +150,28 @@ const actions = {
             const { data } = await axios.post('/api/quotations/services', payload)
 
             if(!data.ok) throw { message: 'No se logro consultar por los servicios'}
+            
+
+            await commit('SET_SERVICIOS', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los servicios")
+            loading.hide()
+            console.error('Error al buscar los servicios:: ', error) 
+        } 
+    },
+    async getServiciosByAssayId({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post(`/api/quotations/parent`, payload)
+
+            console.log('POST SERVICIOS::', data.data)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los servicios de Assay'}
             
 
             await commit('SET_SERVICIOS', data.data)
@@ -385,6 +407,27 @@ const actions = {
             loading.hide()
             console.error('Error No se logro crear el proyecto: ', error) 
         }
+    },
+    async setCotizacion({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {   
+
+            const { data } =  await axios.get(`/api/quotations/${ payload.item.id }/${ payload.item.active }`)
+
+            console.log('data cotizacion:: ', data.data)
+            loading.hide()  
+            await commit('SET_COTIZACION', data?.data[0])
+            await commit('SET_SERVICIOS_AGREGADOS', [])
+            await commit('CLEAR_SERVICIOS_ELEGIDOS') 
+
+        } catch (error) {
+            payload.toast.error("Error al sete4ar cotizacion")
+            loading.hide()
+            console.error('Error No  se crear cotizacion: ', error) 
+        }
+    
     },
     async crearCotizacion({commit}, payload) 
     {   

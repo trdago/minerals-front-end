@@ -276,21 +276,36 @@ export default {
             await this.search()
         },
     },
-    mounted()
+    async mounted()
     {
         this.filters['active'] = 2
+
+        await this.search()
     },
     methods: {
-        ...mapActions('cotizaciones', ['searchFilter', 'download']),
+        ...mapActions('cotizaciones', [
+            'searchFilter', 
+            'download',
+            'setCotizacion'
+        ]),
+        
 
         async ver(item)
-        {
-            console.log('VER:: ', item)
-            
+        { 
+
+            console.log('item:: ', item)
+
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.item = item
+
+            await this.setCotizacion(payload)
+
             router.push({
                 name: 'cotizaciones_view',  
                 params: {
-                        id: '1314'
+                        id: item.id
                 }} 
             )
         },
