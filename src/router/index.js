@@ -4,9 +4,11 @@ import Login from '../views/Login.vue'
 import HomeView from '../views/HomeView'
 import ConstruccionView from '../views/Construccion'
 import CotizacionListView from '../views/cotizaciones/List'
+import CotizacionHistorico from '../views/cotizaciones/Historico'
 import CotizacionesView from '../views/cotizaciones/Index'
 import UploadView from '../views/icp/Upload'
 import CotizacionesNewView from '../views/cotizaciones/New'
+import CotizacionesNuevaVersionView from '../views/cotizaciones/NewVersion'
 import CotizacionesNewDosView from '../views/cotizaciones/Nueva'
 import CotizacionesAprobarView from '../views/cotizaciones/Aprobar'
 import CotizacionListPorVencerView from '../views/cotizaciones/Vencer'
@@ -68,6 +70,12 @@ const routes = [
         beforeEnter: auth,
       },
       {
+        path: '/quotations/addfromparent/:id',
+        name: 'cotizaciones_nueva_version',
+        component: CotizacionesNuevaVersionView,
+        beforeEnter: auth,
+      },
+      {
         path: '/quotations/add/2',
         name: 'cotizaciones_new_dos',
         component: CotizacionesNewDosView,
@@ -95,6 +103,12 @@ const routes = [
         path: '/quotations/view/:id',
         name: 'cotizaciones_view',
         component: CotizacionView,
+        beforeEnter: auth,
+      },
+      {
+        path: '/quotations/historico/view/:id',
+        name: 'cotizaciones_historico',
+        component: CotizacionHistorico,
         beforeEnter: auth,
       },
     ]

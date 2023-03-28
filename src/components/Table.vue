@@ -200,8 +200,8 @@
                     <template #button-content>
                         <span class="sr-only">Opciones</span>
                     </template> 
-                    <b-dropdown-item  href="">Nueva versión</b-dropdown-item>
-                    <b-dropdown-item  href="">Ver historial</b-dropdown-item>
+                    <b-dropdown-item  @click="nuevaVersion(row.item)">Nueva versión</b-dropdown-item>
+                    <b-dropdown-item  @click="verHistorico(row.item)">Ver historial</b-dropdown-item>
                     <b-dropdown-item  @click="descargarPDF(row.item)">Descargar PDF</b-dropdown-item> 
                     <b-dropdown-item  @click="descargarDOC(row.item)">Descargar WORD</b-dropdown-item> 
                     <b-dropdown-item  href="">Anular</b-dropdown-item> 
@@ -256,6 +256,7 @@ import { mapState, mapActions } from 'vuex'
 import { ModelSelect } from 'vue-search-select'
 import { downloadPDFBase64 } from './../util/pdfHelper'
 import router from './../router'
+import Swal from "sweetalert2"
 
 export default {
     name: 'TableComponent',
@@ -286,10 +287,48 @@ export default {
         ...mapActions('cotizaciones', [
             'searchFilter', 
             'download',
+            'getHistorico',
+            'cotizacionAccion',
             'setCotizacion'
-        ]),
-        
+        ]),  
+        async nuevaVersion(item)
+        {  
 
+            console.log('Ver historico')
+            console.log('item:: ', item)
+
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.item = item
+
+            await this.setCotizacion(payload)
+            router.push({
+                name: 'cotizaciones_nueva_version',  
+                params: {
+                        id: item.id
+                }} 
+            )
+        },
+        async verHistorico(item)
+        {  
+
+            console.log('Ver historico')
+            console.log('item:: ', item)
+
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.id = item.id
+
+            await this.getHistorico(payload)
+            router.push({
+                name: 'cotizaciones_historico',  
+                params: {
+                        id: item.id
+                }} 
+            )
+        },
         async ver(item)
         { 
 
@@ -308,6 +347,33 @@ export default {
                         id: item.id
                 }} 
             )
+        },
+        async anular(item)
+        { 
+
+            console.log('item:: ', item)
+
+            const { value } = await Swal.fire(
+                    { 
+                        text: '¿Está seguro que desea anular esta cotización?',  
+                        type: 'default', 
+                        confirmButtonText: 'Aceptar',
+                        showCancelButton: false
+                    })
+
+            if(!value) return console.info('Cancelado')
+
+
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.active = 1
+            payload.id = item.id       
+            payload.accion = 'anular'     
+            payload.state_id = 3       
+
+            await this.cotizacionAccion(payload)
+ 
         },
 
         async descargarPDF(item)

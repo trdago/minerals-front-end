@@ -10,6 +10,7 @@ const state = {
     servicios: [],
     servicios_agregados: [],
     servicios_elegidos: [],
+    cotizaciones_historico : [],
     tipos_ensayos: [],
     tipos_muestras: [],
     tipos_digestiones: [],
@@ -88,7 +89,7 @@ const mutations = {
     SET_ALL_COTIZACIONES(state, payload)
     { 
         state.all_cotizaciones = payload
-    }
+    } 
 
 }
 
@@ -476,6 +477,46 @@ const actions = {
             payload.toast.error("Error en el new end")
             loading.hide()
             console.error('Error  en el new end: ', error) 
+        }
+    
+    },
+    async getHistorico({commit}, payload) 
+    {    
+        let loading = payload.loading.show()
+
+        try {
+            const { data } =  await axios.post('/api/quotations/parent', payload) 
+
+            if(!data.ok) throw { message: 'No se puede obtener el historico'} 
+
+            loading.hide()  
+
+            await commit('SET_COTIZACIONES_HISTORIAL', data.data)
+
+        } catch (error) {
+            payload.toast.error("No se puede obtenr rel historico")
+            loading.hide()
+            console.error('Nos e peud eobtener el historico: ', error) 
+        }
+    
+    },
+    async cotizacionAccion(state, payload) 
+    {    
+        let loading = payload.loading.show()
+
+        try {
+            const { data } =  await axios.post('/api/quotations/action', payload) 
+
+            if(!data.ok) throw { message: 'No se puedo realizar la accion'} 
+
+
+            payload.toast.success("Cotizacion creada")
+            loading.hide()   
+
+        } catch (error) {
+            payload.toast.error("No se puedo realizar la accion")
+            loading.hide()
+            console.error('No se puedo realizar la accion: ', error) 
         }
     
     },
