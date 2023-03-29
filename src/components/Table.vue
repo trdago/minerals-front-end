@@ -204,7 +204,7 @@
                     <b-dropdown-item  @click="verHistorico(row.item)">Ver historial</b-dropdown-item>
                     <b-dropdown-item  @click="descargarPDF(row.item)">Descargar PDF</b-dropdown-item> 
                     <b-dropdown-item  @click="descargarDOC(row.item)">Descargar WORD</b-dropdown-item> 
-                    <b-dropdown-item  href="">Anular</b-dropdown-item> 
+                    <b-dropdown-item  @click="anular(row.item)">Anular</b-dropdown-item> 
                     <b-dropdown-item  href="">Editar estado interno</b-dropdown-item> 
                     <b-dropdown-item  href="">Adjuntar</b-dropdown-item> 
 
@@ -358,7 +358,7 @@ export default {
                         text: '¿Está seguro que desea anular esta cotización?',  
                         type: 'default', 
                         confirmButtonText: 'Aceptar',
-                        showCancelButton: false
+                        showCancelButton: true
                     })
 
             if(!value) return console.info('Cancelado')
@@ -370,7 +370,7 @@ export default {
             payload.active = 1
             payload.id = item.id       
             payload.accion = 'anular'     
-            payload.state_id = 3       
+            payload.state_id = 4       
 
             await this.cotizacionAccion(payload)
  

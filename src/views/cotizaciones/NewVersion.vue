@@ -372,8 +372,10 @@ export default {
        }) 
 
        console.log('cotiza:: ', this.cotiza)
+       this.form.cliente_rut.value = 
 
        this.loading.hide()
+
 
 
 

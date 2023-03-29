@@ -11,6 +11,7 @@ const state = {
     servicios_agregados: [],
     servicios_elegidos: [],
     cotizaciones_historico : [],
+    cotizaciones_por_aprobar : [],
     tipos_ensayos: [],
     tipos_muestras: [],
     tipos_digestiones: [],
@@ -65,13 +66,16 @@ const mutations = {
     {
         state.cotizaciones_historicas = payload
     },
+    SET_COTIZACIONES_POR_APROBAR(state, payload)
+    {
+        state.cotizaciones_por_aprobar = payload
+    },
     SET_SERVICIOS_AGREGADOS(state, payload)
     {
         state.servicios_agregados = payload
     },
     DELETE_SERVICIOS_AGREGADOS(state, payload)
-    {
-        console.log('eliminar::', payload.id)
+    { 
         state.servicios_agregados = state.servicios_agregados.filter(ser => ser.id != payload.id)
     },
     ADD_SERVICIOS_ELEGIDOS(state, payload)
@@ -204,6 +208,25 @@ const actions = {
             payload.toast.error("Error al buscar las cotizaciones")
             loading.hide()
             console.error('Error al buscar las cotizaciones:: ', error) 
+        } 
+    },
+    async getCotizacionesPorAprobar({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try { 
+            const { data } = await axios.get(`/api/quotations/pending`)
+
+            if(!data.ok) throw { message: 'No se logro obtener las cotizaciones por aprobar'}
+            
+
+            await commit('SET_COTIZACIONES_POR_APROBAR', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar las cotizaciones por aprobar")
+            loading.hide()
+            console.error('Error al buscar las cotizaciones por aprobar:: ', error) 
         } 
     },
     async getTipoEnsayo({commit}, payload) 
@@ -514,7 +537,7 @@ const actions = {
             loading.hide()   
 
         } catch (error) {
-            payload.toast.error("No se puedo realizar la accion")
+            payload.toast.error(`No se puedo realizar la accion: ${ payload.accion }`)
             loading.hide()
             console.error('No se puedo realizar la accion: ', error) 
         }
