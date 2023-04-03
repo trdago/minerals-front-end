@@ -19,19 +19,19 @@
                 <tr v-if="cotiza">
                     <td class="text-right">Cotización</td> 
                     <td class="text-left">
-                      {{ cotiza.quotation_number }}
+                      {{  cotiza.quotation_number   }}
                     </td>
                 </tr> 
                 <tr v-if="cotiza">
-                    <td class="text-right">Iniciar</td> 
+                    <td class="text-right">Iniciar  </td> 
                     <td class="text-left">
-                      {{  new Date(cotiza.start_date) |   dateFormat('DD-MM-YYYY')  }}
+                      {{   cotiza.start_date |   moment('dd-mm-yyyy')  }}
                     </td>
                 </tr> 
                 <tr v-if="cotiza">
                     <td class="text-right">Expiración</td> 
                     <td class="text-left">
-                      {{  new Date(cotiza.expiration_date) |   dateFormat(' DD-MM-YYYY')  }}
+                      {{  cotiza.expiration_date |  moment('dd-mm-yyyy') }}
                     </td>
                 </tr> 
                 <tr v-if="cotiza">
@@ -368,7 +368,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex'
 import Swal from "sweetalert2"
 import route from '../../router'
-import { downloadPDFBase64 } from './../../util/pdfHelper'
+import { downloadPDFBase64 } from './../../util/pdfHelper' 
 
 export default {
   name: 'CotizacionView',
@@ -393,6 +393,7 @@ export default {
   }, 
   async mounted()
   { 
+ 
        this.getServiciosByAssayId(
        {
           loading: this.$loading,
@@ -614,6 +615,7 @@ export default {
   ,data()
   {
     return { 
+      servicios_elegidos:[],
       cotizacion: null, 
       filters: {
             id: '',

@@ -18,14 +18,15 @@ import 'vue-search-select/dist/VueSearchSelect.css'
  
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import Vuelidate from 'vuelidate'
-
+ 
 Vue.use(VueFilterDateFormat)
 
 
-
+Vue.use(require('vue-moment'))
 
 Vue.config.productionTip = false  
 
+ 
 
 
 
