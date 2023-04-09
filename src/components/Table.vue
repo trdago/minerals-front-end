@@ -193,7 +193,7 @@
                    <b-badge v-if="row.item.state_id == 4" class="bg-seondary">Anulada</b-badge>  
                
              </template>
-             <template #cell(acciones)="">   
+             <template #cell(acciones)="row">   
                 <b-button-group size="sm">
                     <b-button >ver</b-button>
                     <b-dropdown size="sm" variant="secondary">
@@ -202,8 +202,8 @@
                     </template> 
                     <b-dropdown-item  href="">Nueva versión</b-dropdown-item>
                     <b-dropdown-item  href="">Ver historial</b-dropdown-item>
-                    <b-dropdown-item  href="">Descargar PDF</b-dropdown-item> 
-                    <b-dropdown-item  href="">Descargar WORD</b-dropdown-item> 
+                    <b-dropdown-item  @click="descargarArchivo(row.item.id, 'pdf')">Descargar PDF</b-dropdown-item> 
+                    <b-dropdown-item  @click="descargarArchivo(row.item.id, 'doc')" >Descargar WORD</b-dropdown-item> 
                     <b-dropdown-item  href="">Anular</b-dropdown-item> 
                     <b-dropdown-item  href="">Editar estado interno</b-dropdown-item> 
                     <b-dropdown-item  href="">Adjuntar</b-dropdown-item> 
@@ -279,7 +279,7 @@ export default {
         this.filters['active'] = 2
     },
     methods: {
-        ...mapActions('cotizaciones', ['searchFilter']),
+        ...mapActions('cotizaciones', ['searchFilter', 'download']),
         async search()
         {
             console.log("this.filter", this.filters)
@@ -304,9 +304,19 @@ export default {
             //payload.cliente = this.filters['cliente']
 
             await this.searchFilter(payload)
-        }
-  },
-  data: function(){
+        },
+        async descargarArchivo(id, tipo){
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.download =tipo
+            payload.id = id
+            await this.download(payload)
+
+            
+        },
+    },
+    data: function(){
       return {
           currentPage:1,
           porPagina: 5,
@@ -357,10 +367,11 @@ export default {
         filter: null,
         filterOn: [],         
         }
-  },
-  components: {
+    },
+    components: {
       ModelSelect
-
-  }
+    },
+    created(){
+    }
 }
 </script>

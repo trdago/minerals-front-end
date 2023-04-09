@@ -207,17 +207,26 @@ export default {
             await this.search()
         },
     },
+    async created(){
+        console.log('cargar ......')
+        this.loading = this.$loading.show()
+        await this.search()
+    },
     methods: {
         ...mapActions('cotizaciones', ['porAprobar'],['quotationAction']),
         async search()
         {   
             const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
             payload.limit = this.porPagina
             payload.offset =  this.porPagina * (this.currentPage - 1)  
             await this.porAprobar(payload)
         },
         async accionQuo(id, act ){
             const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
             payload.id = id
             payload.accion = act
             await this.quotationAction(payload)

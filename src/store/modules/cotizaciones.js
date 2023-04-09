@@ -84,7 +84,10 @@ const actions = {
 
         try {
 
-            // todo
+            const { data } =  await axios.post('/api/quotations/download', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar consultar por la cotización'}
+            console.log("data::::::", data);
 
             loading.hide()
         } catch (error) {
@@ -384,6 +387,7 @@ const actions = {
     },
     async porAprobar({commit}, payload) 
     {   
+        console.log("llego al services:::::", payload);
         let loading = payload.loading.show()
 
         try {
@@ -392,7 +396,7 @@ const actions = {
 
             if(!data.ok) throw { message: 'No se logro consultar las cotizaciones'}
             
-            console.log("data::::", data);
+            console.log("buscar POR APROBAR::::", data);
 
             await commit('SET_COTIZACIONES', data)
 
