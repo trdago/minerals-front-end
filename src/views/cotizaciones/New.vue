@@ -442,7 +442,6 @@ export default {
       this.form.moneda.value = item.value
       this.form.moneda.text = item.text
     },
-
     async crear()
     {
 

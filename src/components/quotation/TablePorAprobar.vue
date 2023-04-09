@@ -209,11 +209,10 @@ export default {
     },
     async created(){
         console.log('cargar ......')
-        this.loading = this.$loading.show()
         await this.search()
     },
     methods: {
-        ...mapActions('cotizaciones', ['porAprobar'],['quotationAction']),
+        ...mapActions('cotizaciones', ['porAprobar','quotationAction']),
         async search()
         {   
             const payload = {}
@@ -230,6 +229,7 @@ export default {
             payload.id = id
             payload.accion = act
             await this.quotationAction(payload)
+            await this.search();
             // console.log("data retutrn", tester1);
         },
         async ver(id){

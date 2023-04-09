@@ -24,6 +24,9 @@ const mutations = {
 
     SET_COTIZACIONES(state, payload)
     {
+        console.log("SET:::::::::", payload);
+        console.log("SET:::::::::", payload.data);
+
         state.totalRows = payload.total_registros
         state.cotizaciones = payload.data
     },
@@ -387,20 +390,15 @@ const actions = {
     },
     async porAprobar({commit}, payload) 
     {   
-        console.log("llego al services:::::", payload);
         let loading = payload.loading.show()
-
         try {
 
             const { data } =  await axios.post('/api/quotations/pendingquotations', payload)
-
             if(!data.ok) throw { message: 'No se logro consultar las cotizaciones'}
-            
-            console.log("buscar POR APROBAR::::", data);
-
+          console.log("DATDA;;;", data);
             await commit('SET_COTIZACIONES', data)
-
             loading.hide()
+
         } catch (error) {
             payload.toast.error("Error al buscar las cotizaciones")
             loading.hide()
@@ -449,10 +447,7 @@ const actions = {
         } 
     },
 
-
 }
-
-
 
 const getters= { 
     condicionesFormat: state => {
