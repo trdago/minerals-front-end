@@ -6,24 +6,9 @@
         header-bg-variant="darwin"
         header="Datos de la cotización"
         header-tag="header"> 
-        <b-row>
-          <b-col>
-            <b-form-group 
-              label-size="sm"
-              description="Nombre cliente"
-              label="Seleccione cliente"
-              label-for="input-1">
-              <basic-select
-                  :selectedOption="form.cliente"
-                  @select="changeCliente"
-                  size="sm"  
-                  :options="clientesFormat"
-                  placeholder="Cliente">
-              </basic-select> 
-            </b-form-group>
-          </b-col>
+        <b-row> 
           <b-col> 
-            <b-form-group  
+            <b-form-group   
             label-size="sm"
             description="Run del cliente"
             label="Rut Cliente"
@@ -32,11 +17,10 @@
             :class="{ 'is-invalid': $v.form.cliente_rut.value.$invalid }"  
             size="sm">
                 <b-form-input  
+                :disabled="true"
                 :class="{ 'is-invalid': $v.form.cliente_rut.value.$invalid }" 
                  v-model="form.cliente_rut.value" trim></b-form-input>
-            <b-input-group-append>
-              <b-button @click="comprobarCliente" :disabled="!form.cliente_rut.value"  variant="pdarwin">Comprobar</b-button>
-            </b-input-group-append>
+        
           </b-input-group>
           <div class="invalid-feedback">
                 El RUT es requerido
@@ -49,55 +33,96 @@
         </b-row>
         <b-row>
           <b-col>
-              <b-form-group
-            label-size="sm"
-            description="Estado cliente"
-            label="Estado cliente"
-            label-for="input-1">
-            <b-form-input size="sm" :disabled="true" v-model="form.cliente_active.value"   trim></b-form-input>
-          </b-form-group> 
-          
-          </b-col>
-          <b-col>
-            <b-form-group
-            label-size="sm"
-            description="Nombre cliente"
-            label="Nombre cliente"
-            label-for="input-1">
-            <b-form-input size="sm" :disabled="true" id="input-1" v-model="form.cliente_nombre.value"   trim></b-form-input>
-          </b-form-group>
+           
 
-          </b-col>
+           <b-form-group
+           label-size="sm"
+           description="N° Cotización"
+           label="N° Cotización"
+           label-for="input-1">
+           <b-form-input size="sm"  id="input-1" v-model="form.cotizacion.value"   trim></b-form-input>
+         </b-form-group>
+       
+       </b-col>
         </b-row>
+        <b-row>
+         
+         <b-col>
+           <b-form-group
+           label-size="sm"
+           description="Nombre cliente"
+           label="Nombre cliente"
+           label-for="input-1">
+           <b-form-input size="sm" :disabled="true" id="input-1" v-model="form.cliente_nombre.value"   trim></b-form-input>
+         </b-form-group>
+
+         </b-col>
+       </b-row>
 
         <b-row>
           <b-col>
-        
-            <b-form-group
-              label-size="sm"
-              description="Destinatario"
-              label="Destinatario"
-              label-for="input-1">
-              <b-form-input :class="{ 'is-invalid': $v.form.destinatario.value.$invalid }"  size="sm" id="input-1" v-model="form.destinatario.value"  trim></b-form-input>
-              <div class="invalid-feedback">
-                El Destinatario es requerido
-              </div>
-            </b-form-group> 
-
-          </b-col>
-          <b-col>
-           
-
               <b-form-group
-              label-size="sm"
-              description="N° Cotización"
-              label="N° Cotización"
-              label-for="input-1">
-              <b-form-input size="sm"  id="input-1" v-model="form.cotizacion.value"   trim></b-form-input>
-            </b-form-group>
-          
+                label-size="sm"
+                description="Estado del  cliente"
+                label="Estado cliente"
+                label-for="input-1">
+            <b-form-input size="sm" :disabled="true" v-model="form.cliente_active.value"   trim></b-form-input>
+            </b-form-group> 
           </b-col>
         </b-row> 
+
+        <b-row>
+          <b-col>
+              <b-form-group
+                label-size="sm"
+                description="Inicio"
+                label="Inicio"
+                label-for="input-1">
+              <b-form-input 
+                size="sm" 
+                :disabled="true" 
+                v-model="form.inicio.value"   
+                trim>
+              </b-form-input>
+          </b-form-group> 
+          </b-col>
+        </b-row> 
+
+        <b-row>
+          <b-col>
+              <b-form-group
+                label-size="sm"
+                description="Fecha de expiración de vigencia"
+                label="Fecha de expiración de vigencia"
+                label-for="input-1">
+              <b-form-input 
+                size="sm" 
+                :disabled="true" 
+                v-model="form.inicio.value"   
+                trim>
+              </b-form-input>
+          </b-form-group> 
+          </b-col>
+        </b-row> 
+
+        <b-row>
+          <b-col>
+              <b-form-group
+                label-size="sm"
+                description="Destinatario"
+                label="Destinatario"
+                label-for="input-1">
+              <b-form-input 
+                size="sm" 
+                :disabled="true" 
+                v-model="form.inicio.value"   
+                trim>
+              </b-form-input>
+          </b-form-group> 
+          </b-col>
+        </b-row> 
+
+
       </b-card>
     </b-card-group>
     <b-card-group class="mt-1" deck>
@@ -303,14 +328,14 @@ import { required } from 'vuelidate/lib/validators'
 
 
 export default {
-  name: 'CotizacionesNewView',
+  name: 'CotizacionesNuevaVersionView',
   computed:{
     ...mapState('monedas', ['monedas']), 
     ...mapState('clientes', ['clientes']), 
     ...mapState('proyectos', ['proyectos']), 
-    ...mapState('cotizaciones', ['condiciones']), 
+    ...mapState('cotizaciones', ['condiciones', 'cotiza']), 
     ...mapGetters('clientes', ['clientesFormat', 'proyectosFormat']), 
-    ...mapGetters('cotizaciones', ['condicionesFormat']), 
+    ...mapGetters('cotizaciones', ['condicionesFormat' ]), 
     ...mapGetters('monedas', ['monedasFormat']), 
 
   },
@@ -346,22 +371,12 @@ export default {
          limit: 100
        }) 
 
-    this.loading.hide()
-    const payload = {}
+       console.log('cotiza:: ', this.cotiza)
+       this.form.cliente_rut.value = 
+
+       this.loading.hide()
 
 
-    payload.loading = this.$loading
-    payload.toast = this.$toast
-
-    payload.tipo = 'compañias'
-
-    payload.active= '1'
-    payload.offset= 1
-    payload.limit= 1
-    payload.id= 0
-    payload.todas= 'si'
-
-    await this.getClientes(payload)
 
 
   },
@@ -369,7 +384,12 @@ export default {
     ...mapActions('monedas', ['getAllMonedas']),
     ...mapActions('clientes', ['getClientes', 'validaCliente']), 
     ...mapActions('proyectos', ['getProyectos']), 
-    ...mapActions('cotizaciones', ['searchCondiciones', 'crearProyecto', 'crearCotizacion', 'setModena']), 
+    ...mapActions('cotizaciones', [
+      'searchCondiciones', 
+      'crearProyecto', 
+      'crearCotizacion', 
+      'setModena' 
+    ]), 
 
     async newProyecto()
     {
@@ -469,6 +489,7 @@ export default {
       this.form.moneda.text = item.text
       this.setModena(this.form.moneda.text)
     },
+
     async crear()
     {
 
@@ -520,6 +541,7 @@ export default {
       empresas: [],
       form: {
         cliente: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        inicio: { text: null, value: null, isError: false, error: null, class: "select-default" },
         proyecto: { text: null, value: null, isError: false, error: null, class: "select-default" },
         especificaciones: { text: null, value: null, isError: false, error: null, class: "select-default" },
         destinatario: { text: null, value: null, isError: false, error: null, class: "select-default" },

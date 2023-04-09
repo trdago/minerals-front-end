@@ -277,33 +277,18 @@ export default {
     mounted()
     {
         this.filters['active'] = 2
+        this.search()
     },
     methods: {
-        ...mapActions('cotizaciones', ['searchFilter']),
+        ...mapActions('cotizaciones', ['searchFilter','porVencer']),
         async search()
         {
-            console.log("this.filter", this.filters)
             const payload = {}
             payload.loading = this.$loading
             payload.toast = this.$toast
-            payload.tipo = 'filtros'
             payload.limit = this.porPagina
             payload.offset =  this.porPagina * (this.currentPage - 1)
-            payload.cliente= this.filters['company_name']
-            payload.quotation_state_id= this.filters['quotation_state']
-            payload.state_id= this.filters['state_id']
-            // payload.creador=  this.filters['quotation_number']
-            payload.active =String(this.filters['active'])  
-
-            if(this.filters['quotation_number'])
-                payload.quotation_number =String(this.filters['quotation_number'])  
-            
-            payload.todas = "no"     
-            
-            console.log('pay:: ', payload)
-            //payload.cliente = this.filters['cliente']
-
-            await this.searchFilter(payload)
+            await this.porVencer(payload)
         }
   },
   data: function(){
@@ -344,7 +329,7 @@ export default {
         loading : false, 
         isBusy: false,
         fields: [
-            {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Interno Plazo', class: 'text-center' },
+            {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Internos', class: 'text-center' },
             {  is_select: 'quotation_number', active: false, fil: true, key: 'quotation_number', label: 'Cotizacion', class: 'text-center'},
             {  is_select: 'company_name', active: false, fil: true, key: 'company_name', label: 'Cliente', class: 'text-center'},
             {  is_select: false, active: false, fil: true, key: 'project', label: 'Proyecto' , class: 'text-center'},

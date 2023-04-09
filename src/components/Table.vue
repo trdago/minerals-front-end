@@ -195,17 +195,17 @@
              </template>
              <template #cell(acciones)="row">   
                 <b-button-group size="sm">
-                    <b-button >ver</b-button>
+                    <b-button @click="ver(row.item)">ver</b-button>
                     <b-dropdown size="sm" variant="secondary">
                     <template #button-content>
                         <span class="sr-only">Opciones</span>
                     </template> 
-                    <b-dropdown-item  href="">Nueva versión</b-dropdown-item>
-                    <b-dropdown-item  href="">Ver historial</b-dropdown-item>
-                    <b-dropdown-item  @click="descargarArchivo(row.item.id, 'pdf')">Descargar PDF</b-dropdown-item> 
-                    <b-dropdown-item  @click="descargarArchivo(row.item.id, 'doc')" >Descargar WORD</b-dropdown-item> 
-                    <b-dropdown-item  href="">Anular</b-dropdown-item> 
-                    <b-dropdown-item  href="">Editar estado interno</b-dropdown-item> 
+                    <b-dropdown-item  @click="nuevaVersion(row.item)">Nueva versión</b-dropdown-item>
+                    <b-dropdown-item  @click="verHistorico(row.item)">Ver historial</b-dropdown-item>
+                    <b-dropdown-item  @click="descargarPDF(row.item)">Descargar PDF</b-dropdown-item> 
+                    <b-dropdown-item  @click="descargarDOC(row.item)">Descargar WORD</b-dropdown-item> 
+                    <b-dropdown-item  @click="anular(row.item)">Anular</b-dropdown-item> 
+                    <b-dropdown-item  @click="estadoInterno(row.item.id)">Editar estado interno</b-dropdown-item> 
                     <b-dropdown-item  href="">Adjuntar</b-dropdown-item> 
 
                     </b-dropdown>
@@ -254,6 +254,9 @@
 // @ is an alias to /src
 import { mapState, mapActions } from 'vuex'
 import { ModelSelect } from 'vue-search-select'
+import { downloadPDFBase64 } from './../util/pdfHelper'
+import router from './../router'
+import Swal from "sweetalert2"
 
 export default {
     name: 'TableComponent',
@@ -274,15 +277,143 @@ export default {
             await this.search()
         },
     },
-    mounted()
+    async mounted()
     {
         this.filters['active'] = 2
+
+        await this.search()
     },
     methods: {
-        ...mapActions('cotizaciones', ['searchFilter', 'download']),
-        async search()
+        ...mapActions('cotizaciones', [
+            'searchFilter', 
+            'download',
+            'getHistorico',
+            'cotizacionAccion',
+            'setCotizacion',
+            'cambiaEstadoInterno'
+        ]),  
+        async nuevaVersion(item)
+        {  
+
+            console.log('Ver historico')
+            console.log('item:: ', item)
+
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.item = item
+
+            await this.setCotizacion(payload)
+            router.push({
+                name: 'cotizaciones_nueva_version',  
+                params: {
+                        id: item.id
+                }} 
+            )
+        },
+        async verHistorico(item)
+        {  
+
+            console.log('Ver historico')
+            console.log('item:: ', item)
+
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.id = item.id
+
+            await this.getHistorico(payload)
+            router.push({
+                name: 'cotizaciones_historico',  
+                params: {
+                        id: item.id
+                }} 
+            )
+        },
+        async ver(item)
+        { 
+
+            console.log('item:: ', item)
+
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.item = item
+
+            await this.setCotizacion(payload)
+
+            router.push({
+                name: 'cotizaciones_view',  
+                params: {
+                        id: item.id
+                }} 
+            )
+        },
+        async anular(item)
+        { 
+
+            console.log('item:: ', item)
+
+            const { value } = await Swal.fire(
+                    { 
+                        text: '¿Está seguro que desea anular esta cotización?',  
+                        type: 'default', 
+                        confirmButtonText: 'Aceptar',
+                        showCancelButton: true
+                    })
+
+            if(!value) return console.info('Cancelado')
+
+
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.active = 1
+            payload.id = item.id       
+            payload.accion = 'anular'     
+            payload.state_id = 4       
+
+            await this.cotizacionAccion(payload)
+ 
+        },
+        async descargarPDF(item)
         {
-            console.log("this.filter", this.filters)
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.active = 1
+            payload.id = item.id
+            payload.download = 'pdf' 
+
+            const data =  await this.download(payload)  
+
+            await downloadPDFBase64([
+            {
+                documento: data, 
+                contentType: 'application/pdf',
+                nombre: `${ item.id }.pdf`
+            }]) 
+        },
+        async descargarDOC(item)
+        {
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.active = 1
+            payload.id = item.id
+            payload.download = 'word' 
+
+            const data =  await this.download(payload)  
+ 
+            await downloadPDFBase64([
+            {
+                documento: data, 
+                contentType: 'application/msword',
+                nombre: `${ item.id }.doc`
+            }]) 
+        },
+        async search()
+        { 
             const payload = {}
             payload.loading = this.$loading
             payload.toast = this.$toast
@@ -315,6 +446,15 @@ export default {
 
             
         },
+        async estadoInterno(id){
+            console.log("estado interno", id);
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.id = id       
+            await this.cambiaEstadoInterno(payload)
+
+        }
     },
     data: function(){
       return {

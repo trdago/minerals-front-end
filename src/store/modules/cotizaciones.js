@@ -1,4 +1,6 @@
 import axios from 'axios'
+import route from '../../router'
+
 const state = {
     cotizaciones: [],
     condiciones: [],
@@ -8,10 +10,14 @@ const state = {
     servicios: [],
     servicios_agregados: [],
     servicios_elegidos: [],
+    cotizaciones_historico : [],
+    cotizaciones_por_aprobar : [],
     tipos_ensayos: [],
     tipos_muestras: [],
     tipos_digestiones: [],
     tipos_tecnicas: [],
+    all_cotizaciones: [],
+    stringMoneda:' ',
     pageOptions: [
         {value: 5, text: '5'},
         {value: 10, text: '10'},
@@ -24,9 +30,6 @@ const mutations = {
 
     SET_COTIZACIONES(state, payload)
     {
-        console.log("SET:::::::::", payload);
-        console.log("SET:::::::::", payload.data);
-
         state.totalRows = payload.total_registros
         state.cotizaciones = payload.data
     },
@@ -63,40 +66,58 @@ const mutations = {
     {
         state.cotizaciones_historicas = payload
     },
+    SET_COTIZACIONES_POR_APROBAR(state, payload)
+    {
+        state.cotizaciones_por_aprobar = payload
+    },
     SET_SERVICIOS_AGREGADOS(state, payload)
     {
         state.servicios_agregados = payload
     },
     DELETE_SERVICIOS_AGREGADOS(state, payload)
-    {
-        console.log('eliminar::', payload.id)
+    { 
         state.servicios_agregados = state.servicios_agregados.filter(ser => ser.id != payload.id)
     },
     ADD_SERVICIOS_ELEGIDOS(state, payload)
     { 
         state.servicios_elegidos.push(payload)
-    }
+    },
+    CLEAR_SERVICIOS_ELEGIDOS(state)
+    { 
+        state.servicios_elegidos= []
+    },
+    SET_MONEDA(state, payload)
+    { 
+        state.stringMoneda = payload
+    },
+    SET_ALL_COTIZACIONES(state, payload)
+    { 
+        state.all_cotizaciones = payload
+    } 
 
 }
 
 const actions = {
 
-    async download(state, payload) 
+    async setModena({commit}, payload )
+    {
+        await commit('SET_MONEDA', payload)
+
+    },
+    async download({commit}, payload) 
     {   
-        let loading = payload.loading.show()
-
-        try {
-
+        let loading = payload.loading.show() 
+        console.log(commit);
+        try { 
             const { data } =  await axios.post('/api/quotations/download', payload)
-
             if(!data.ok) throw { message: 'No se logro consultar consultar por la cotización'}
-            console.log("data::::::", data);
+            loading.hide()
+            return data.data
 
-            loading.hide()
         } catch (error) {
-            payload.toast.error("Error al buscar las cotizaciones")
+            payload.toast.error("Error al   descargar el documento")
             loading.hide()
-            console.error('Error al buscar las cotizaciones:: ', error) 
+            console.error('Error no se logro descargar el documento:: ', error) 
         } 
     },
     async searchFilter({commit}, payload) 
@@ -139,6 +160,28 @@ const actions = {
             console.error('Error al buscar los servicios:: ', error) 
         } 
     },
+    async getServiciosByAssayId({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post(`/api/quotations/parent`, payload)
+
+            console.log('POST SERVICIOS::', data.data)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los servicios de Assay'}
+            
+
+            await commit('SET_SERVICIOS', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los servicios")
+            loading.hide()
+            console.error('Error al buscar los servicios:: ', error) 
+        } 
+    },
     async getCotizaciones({commit}, payload) 
     {   
         let loading = payload.loading.show()
@@ -159,6 +202,25 @@ const actions = {
             payload.toast.error("Error al buscar las cotizaciones")
             loading.hide()
             console.error('Error al buscar las cotizaciones:: ', error) 
+        } 
+    },
+    async getCotizacionesPorAprobar({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try { 
+            const { data } = await axios.post(`/api/quotations/pendingquotations`, payload)
+
+            if(!data.ok) throw { message: 'No se logro obtener las cotizaciones por aprobar'}
+            
+
+            await commit('SET_COTIZACIONES_POR_APROBAR', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar las cotizaciones por aprobar")
+            loading.hide()
+            console.error('Error al buscar las cotizaciones por aprobar:: ', error) 
         } 
     },
     async getTipoEnsayo({commit}, payload) 
@@ -282,6 +344,27 @@ const actions = {
             console.error('Error al agregar servicio:: ', error) 
         } 
     },
+    async setServiciosAll({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } =  await axios.post('/api/quotations/cargarservicios', payload)
+
+            if(!data.ok) throw { message: 'No se logro cargar los servicios'}
+
+            console.log('data crgaservicio:: ', data.data)
+
+            await commit('SET_SERVICIOS_AGREGADOS', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al agregar servicio")
+            loading.hide()
+            console.error('Error al agregar servicio:: ', error) 
+        } 
+    },
     async deleteServiceAgregado({commit}, payload) 
     {   
 
@@ -304,7 +387,6 @@ const actions = {
         let loading = payload.loading.show()
 
         try { 
-            console.log('payload::', payload)
 
             const { data } =  await axios.post('/api/quotations/new/detail', {
                 active : 0,
@@ -344,6 +426,27 @@ const actions = {
             console.error('Error No se logro crear el proyecto: ', error) 
         }
     },
+    async setCotizacion({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {   
+
+            const { data } =  await axios.get(`/api/quotations/${ payload.item.id }/${ payload.item.active }`)
+
+            console.log('data cotizacion:: ', data.data)
+            loading.hide()  
+            await commit('SET_COTIZACION', data?.data[0])
+            await commit('SET_SERVICIOS_AGREGADOS', [])
+            await commit('CLEAR_SERVICIOS_ELEGIDOS') 
+
+        } catch (error) {
+            payload.toast.error("Error al sete4ar cotizacion")
+            loading.hide()
+            console.error('Error No  se crear cotizacion: ', error) 
+        }
+    
+    },
     async crearCotizacion({commit}, payload) 
     {   
         let loading = payload.loading.show()
@@ -359,6 +462,10 @@ const actions = {
             payload.toast.success("Cotizacion creada")
             console.log('NUEVA COTIZACION::::', data)
             await commit('SET_COTIZACION', data.data[0])
+            await commit('SET_SERVICIOS_AGREGADOS', [])
+            await commit('CLEAR_SERVICIOS_ELEGIDOS')
+
+            await route.push({name: 'cotizaciones_new_dos'})
             return data.data[0]
 
         } catch (error) {
@@ -381,6 +488,8 @@ const actions = {
             loading.hide() 
             payload.toast.success("Cotizacion Finalizada con exito") 
 
+            await commit('SET_COTIZACION', null)
+
         } catch (error) {
             payload.toast.error("Error en el new end")
             loading.hide()
@@ -392,10 +501,25 @@ const actions = {
     {   
         let loading = payload.loading.show()
         try {
-
             const { data } =  await axios.post('/api/quotations/pendingquotations', payload)
             if(!data.ok) throw { message: 'No se logro consultar las cotizaciones'}
-          console.log("DATDA;;;", data);
+            await commit('SET_COTIZACIONES', data)
+            loading.hide()
+
+        } catch (error) {
+            payload.toast.error("Error al buscar las cotizaciones")
+            loading.hide()
+            console.error('Error al buscar las cotizaciones:: ', error) 
+        } 
+    },
+    async porVencer({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+        try {
+            console.log("payload", payload);
+            const { data } =  await axios.post('/api/quotations/por_vencer', payload)
+            if(!data.ok) throw { message: 'No se logro consultar las cotizaciones'}
+            console.log("data:::", data);
             await commit('SET_COTIZACIONES', data)
             loading.hide()
 
@@ -446,6 +570,20 @@ const actions = {
             console.error('Error al buscar la cotizacion:: ', error) 
         } 
     },
+    async cambiaEstadoInterno({commit}, payload){
+        let loading = payload.loading.show()
+        try {
+            const { data } =  await axios.post('/api/quotations/quotation_validity', payload)
+            if(!data.ok) throw { message: 'No se logro consultar las cotizaciones'}
+            await commit('SET_COTIZACIONES', data)
+            loading.hide()
+
+        } catch (error) {
+            payload.toast.error("Error al buscar las cotizaciones")
+            loading.hide()
+            console.error('Error al buscar las cotizaciones:: ', error) 
+        }    
+    }
 
 }
 
@@ -460,13 +598,11 @@ const getters= {
 
         if(!state.tipos_ensayos) return []
 
-
         return state.tipos_ensayos.map(item => ({ value: item.id, text: item.name }))
     },
     muestrasFormat: state => {
 
         if(!state.tipos_muestras) return []
-
 
         return state.tipos_muestras.map(item => ({ value: item.id, text: item.name }))
     },
@@ -474,13 +610,11 @@ const getters= {
 
         if(!state.tipos_digestiones) return []
 
-
         return state.tipos_digestiones.map(item => ({ value: item.id, text: item.name }))
     },
     tecnicasFormat: state => {
 
         if(!state.tipos_tecnicas) return []
-
 
         return state.tipos_tecnicas.map(item => ({ value: item.id, text: item.name }))
     },
@@ -488,15 +622,19 @@ const getters= {
 
         if(!state.cotizaciones_historicas) return []
 
-
         return state.cotizaciones_historicas.map(item => ({ value: item.id, text: item.name }))
     },
     serviciosFormat: state => {
 
         if(!state.servicios) return []
 
-
         return state.servicios.map(item => ({ value: item.id, text: item.name }))
+    },
+    allCotizacionesFormat: state => {
+
+        if(!state.all_cotizaciones) return []
+
+        return state.all_cotizaciones.map(item => ({ value: item.id, text: `${ item.quotation_number } - ${ item.company_name } ${ item.estado } ` }))
     }
 }
 

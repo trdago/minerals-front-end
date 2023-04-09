@@ -4,7 +4,6 @@ import router from './router'
 import store from './store'
 import './interceptor'
 import { BootstrapVue, IconsPlugin, BootstrapVueIcons} from 'bootstrap-vue' 
-import vueRut from 'vue-rut'
 
 import Vue2Editor from "vue2-editor"
 
@@ -17,16 +16,17 @@ import VueLoading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import 'vue-search-select/dist/VueSearchSelect.css'
  
-import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format';
-
+import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
+import Vuelidate from 'vuelidate'
+ 
 Vue.use(VueFilterDateFormat)
 
 
-Vue.use(vueRut)
-
+Vue.use(require('vue-moment'))
 
 Vue.config.productionTip = false  
 
+ 
 
 
 
@@ -38,6 +38,8 @@ Vue.use(VueLoading,{
   canCancel: false
 })
 Vue.use(Vue2Editor)
+
+Vue.use(Vuelidate)
 
 
 import Toast from "vue-toastification";

@@ -143,7 +143,7 @@
 
         <b-row class="mt-4">
           <b-col sm="12">
-            <b-button size="sm" variant="dark">Importar servicios desde una cotización existente</b-button>
+            <b-button  @click="showModal()" size="sm" variant="dark">Importar servicios desde una cotización existente</b-button>
           </b-col>
         </b-row>
 
@@ -209,7 +209,7 @@
                       <b-col sm="12">{{ row.item.nominal_volume }} </b-col>
                       <b-col sm="12"><b>Peso Volumétrico:</b></b-col>
                       <b-col sm="12">{{ row.item.nominal_weight }} {{ row.item.mass_name }}</b-col>
-                      <b-col sm="12"><b>Elemento:</b> {{ row.item.elemento.symbol }} </b-col> 
+                      <b-col sm="12"><b>Elemento:</b> {{ row.item?.elemento?.symbol || 'sin-elemento' }} </b-col> 
                       <b-col sm="12"> 
                         <b>  Fases: </b> <span v-for="(f ,i) in row.item.fases" :key="i"> <span v-if="i>0">,</span> {{ f.fase }}</span> 
                        </b-col> 
@@ -292,6 +292,25 @@
         </b-row>
 
 
+  <div> 
+    <b-modal ref="my-modal" size="lg" hide-footer title="Importar servicios desde una cotización existente">
+      <b-row class=""> 
+          <b-col sm="12">
+          <b-button-group class="col-sm-12"> 
+              <basic-select
+                  :selectedOption="form.cotizacion_all"
+                  @select="changeCotizacionAll"
+                  size="sm"  
+                  :options="allCotizacionesFormat"
+                  placeholder="Agregar sevicio">
+              </basic-select>  
+                <b-button @click="agregarServiciosAll" variant="dark" size="sm">Importar&nbsp;servicios</b-button>
+            </b-button-group>
+          </b-col>
+        </b-row>
+    </b-modal>
+  </div>
+
 
  
   </div>
@@ -311,8 +330,8 @@ import route from './../../router'
 export default {
   name: 'CotizacionesNewDosView',
   computed:{
-    ...mapState('cotizaciones', ['cotiza', 'servicios', 'servicios_agregados', 'servicios_elegidos']),
-    ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat', 'serviciosFormat']), 
+    ...mapState('cotizaciones', ['cotiza', 'servicios', 'servicios_agregados', 'servicios_elegidos', 'stringMoneda']),
+    ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat', 'serviciosFormat', 'allCotizacionesFormat']), 
     ...mapState('clientes', ['cliente'])
   },
   components: {
@@ -363,8 +382,31 @@ export default {
 
   },
   methods:{
-    ...mapActions('cotizaciones', ['getTipoEnsayo', 'getTipoMuestra', 'getTipoDigestion', 'getTipoTecnica', 'getServicios', 'setServicios', 'deleteServiceAgregado', 'addServiceElegido', 'finalizar']),
+    ...mapActions('cotizaciones', [
+      'getTipoEnsayo', 
+      'getTipoMuestra', 
+      'getTipoDigestion', 
+      'getTipoTecnica', 
+      'getServicios', 
+      'setServicios', 
+      'setServiciosAll', 
+      'deleteServiceAgregado', 
+      'addServiceElegido', 
+      'finalizar', 
+      'getAllCotizaciones'
+    ]),
 
+    async showModal() 
+    {
+
+      await this.getAllCotizaciones(
+      {
+          loading: this.$loading,
+          toast : this.$toast 
+
+      }) 
+      this.$refs['my-modal'].show()
+    },
     async elegirServicio(item)
     { 
         const { value } = await Swal.fire({ text: '¿Está seguro que desea agregar este análisis?',  
@@ -394,16 +436,16 @@ export default {
            
         }) 
 
-    }, 
+    },  
     async finish()
     { 
       const { value } = await Swal.fire({ text: '¿Está seguro que desea terminar de agregar análisis?',  
-                        type: 'success', 
-                        confirmButtonText: 'Aceptar',
-                        showCancelButton: false
-                    })
+                          type: 'success', 
+                          confirmButtonText: 'Aceptar',
+                          showCancelButton: false
+                      })
 
-    if(!value) return console.error('no se acepto')
+      if(!value) return console.error('no se acepto')
 
       
       await this.finalizar(
@@ -414,6 +456,12 @@ export default {
           active : 1
         })
       await route.push({name: 'cotizaciones'})
+
+    },
+    async changeCotizacionAll(item)
+    {
+      this.form.cotizacion_all.value = item.value 
+      this.form.cotizacion_all.text = item.text 
 
     },
     async changeEnsayo(item)
@@ -481,10 +529,26 @@ export default {
        }
       ) 
 
+    },
+    async agregarServiciosAll()
+    {  
+
+      console.log('this.form.servicio.value', this.form.cotizacion_all.value)
+      await this.setServiciosAll(
+        {
+          loading: this.$loading,
+          toast : this.$toast,   
+          id: this.form.cotizacion_all.value, 
+      }
+      ) 
+
+      this.$refs['my-modal'].hide()
+
     }
 
   }
-  ,data(){
+  ,data()
+  {
     return { 
 
       filters: {
@@ -499,7 +563,7 @@ export default {
       filter: null,
       filterOn: [],
       fields: [
-            {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor USD$', class: 'text-center' },
+            {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor USD$' , class: 'text-center' },
             {  is_select: 'Acciones', active: false, fil: true, key: 'Acciones', label: 'Acciones', class: 'text-center'},
             {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-left'},
             {  is_select: 'description', active: false, fil: true, key: 'fases', label: 'Detalle' , class: 'text-left'}
@@ -514,11 +578,12 @@ export default {
             {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor', class: 'text-center'} 
       ],
       form: { 
-      tipo_ensayo: { text: null, value: null, isError: false, error: null, class: "select-default" },
-      tipo_muestra: { text: null, value: null, isError: false, error: null, class: "select-default" },
-      tipo_digestion: { text: null, value: null, isError: false, error: null, class: "select-default" },
-      tipo_tecnica: { text: null, value: null, isError: false, error: null, class: "select-default" },
-      servicio: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_ensayo: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_muestra: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_digestion: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_tecnica: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        servicio: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        cotizacion_all: { text: null, value: null, isError: false, error: null, class: "select-default" },
 
       }
      

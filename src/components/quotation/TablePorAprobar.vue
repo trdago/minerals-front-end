@@ -235,6 +235,9 @@ export default {
         async ver(id){
             const payload = {}
             payload.id = id
+            if(payload.comentario){
+                await this.quotationAction(payload)
+            }
             await this.quotationAction(payload)
         }
     },
