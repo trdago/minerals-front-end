@@ -1,11 +1,13 @@
 # minerals-front-end
 # node version 18.8.0
+### Node version 12.16.1
 ## Project setup
 ```
 npm install
 ```
 
 ### Compiles and hot-reloads for development
+
 ```
 npm run serve
 ```

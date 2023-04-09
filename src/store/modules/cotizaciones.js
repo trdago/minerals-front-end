@@ -381,7 +381,71 @@ const actions = {
             console.error('Error  en el new end: ', error) 
         }
     
-    }
+    },
+    async porAprobar({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } =  await axios.post('/api/quotations/pendingquotations', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar las cotizaciones'}
+            
+            console.log("data::::", data);
+
+            await commit('SET_COTIZACIONES', data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar las cotizaciones")
+            loading.hide()
+            console.error('Error al buscar las cotizaciones:: ', error) 
+        } 
+    },
+    async quotationAction({commit}, payload) 
+    {   
+        console.log("payload::::::::::::::::::2", payload);
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } =  await axios.post('/api/quotations/action', payload)
+
+            if(!data.ok) throw { message: 'No se logro Actualizar la cotización'}
+            
+            console.log("Actualizada::::::", data);
+
+            await commit('SET_COTIZACIONES', data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar las cotizaciones")
+            loading.hide()
+            console.error('Error al buscar las cotizaciones:: ', error) 
+        } 
+    },
+    async getQuotationId({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } =  await axios.post('/api/quotations/quo', payload)
+
+            if(!data.ok) throw { message: 'No se logro encontrar la cotización'}
+            
+            await commit('SET_COTIZACIONES', data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar la cotizacion")
+            loading.hide()
+            console.error('Error al buscar la cotizacion:: ', error) 
+        } 
+    },
+
+
 }
 
 
