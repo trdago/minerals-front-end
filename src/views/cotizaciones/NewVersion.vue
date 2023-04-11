@@ -98,7 +98,7 @@
               <b-form-input 
                 size="sm" 
                 :disabled="true" 
-                v-model="form.inicio.value"   
+                v-model="form.hasta.value"   
                 trim>
               </b-form-input>
           </b-form-group> 
@@ -115,7 +115,7 @@
               <b-form-input 
                 size="sm" 
                 :disabled="true" 
-                v-model="form.inicio.value"   
+                v-model="form.destinatario.value"   
                 trim>
               </b-form-input>
           </b-form-group> 
@@ -242,6 +242,7 @@
         header="Vigencia"
         header-tag="header"> 
         <b-row>
+          {{ form.desde.value }}
           <b-col sm="6">
               <b-form-group 
               label-size="sm"
@@ -318,7 +319,7 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 import { BasicSelect } from 'vue-search-select'
 import { VueEditor } from "vue2-editor"
 import Swal from "sweetalert2"
-
+import moment from 'moment'
 // const { format, validate, clean  } = require('rut.js')
 const { format, clean, validate } = require('rut.js')
 
@@ -372,7 +373,24 @@ export default {
        }) 
 
        console.log('cotiza:: ', this.cotiza)
-       this.form.cliente_rut.value = 
+       this.form.cliente_rut.value = `${ this.cotiza.rut }-${ this.cotiza.dv }`
+       await this.comprobarCliente()
+
+       this.form.inicio.value = this.cotiza.start_date
+       this.form.hasta.value = this.cotiza.expiration_date
+       this.form.destinatario.value = this.cotiza.for
+       this.form.proyecto.value = this.cotiza.project_id 
+       this.form.proyecto.text = this.cotiza.project 
+       this.form.condiciones.value = this.cotiza.general_condition_id 
+       this.form.condiciones.text =  this.cotiza.title 
+       this.form.especificaciones.value =  this.cotiza.specific_condition 
+       this.form.tiempo.value =  this.cotiza.estimated_days 
+       this.form.desde.value = moment(this.cotiza.start_date, "DD/MM/YYYY").format("YYYY-MM-DD").toString() 
+       this.form.hasta.value = moment(this.cotiza.expiration_date, "DD/MM/YYYY").format("YYYY-MM-DD").toString()  
+       this.form.moneda.value = this.cotiza.currency_id  
+       this.form.moneda.text = this.monedas.find(mo=> mo.id == this.cotiza.currency_id ).prefix
+
+       console.log(this.monedas.find(mo=> mo.id == this.cotiza.currency_id ).text, this.monedas)
 
        this.loading.hide()
 
@@ -502,7 +520,7 @@ export default {
       payload.accion = 'nueva_cotizacion'
       payload.active = "0"
       payload.expiration_date = this.form.hasta.value
-      payload.company_id = this.form.cliente.value 
+      payload.company_id = this.cotiza.company_id
       payload.estimated_days = this.form.tiempo.value
       payload.proyect_id = this.form.proyecto.value
       payload.destinatario = this.form.destinatario.value
