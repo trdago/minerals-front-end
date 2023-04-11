@@ -204,9 +204,9 @@
                     <b-dropdown-item  @click="verHistorico(row.item)">Ver historial</b-dropdown-item>
                     <b-dropdown-item  @click="descargarPDF(row.item)">Descargar PDF</b-dropdown-item> 
                     <b-dropdown-item  @click="descargarDOC(row.item)">Descargar WORD</b-dropdown-item> 
-                    <b-dropdown-item  @click="anular(row.item)">Anular</b-dropdown-item> 
+                    <!-- <b-dropdown-item  @click="anular(row.item)">Anular</b-dropdown-item>  -->
                     <b-dropdown-item  @click="estadoInterno(row.item.id)">Editar estado interno</b-dropdown-item> 
-                    <b-dropdown-item  href="">Adjuntar</b-dropdown-item> 
+                    <!-- <b-dropdown-item  href="">Adjuntar</b-dropdown-item>  -->
 
                     </b-dropdown>
                 </b-button-group>
@@ -237,7 +237,32 @@
                 ></b-pagination>
             </b-col>
         </b-row>
+        <div> 
+    <b-modal ref="my-modal" size="lg" hide-footer title="Editar Estado Interno">
+      <b-row class=""> 
+          <b-col sm="12">
 
+              <span>Estado Interno</span>
+              <basic-select
+              :selectedOption="form.quotation_state_id"
+              @select="changeCotizacionAll"
+              size="sm" 
+              :options="internos"
+              placeholder="Seleccionar un estado"> 
+              </basic-select>  
+              <span>comentario</span>
+                <p style="white-space: pre-line;">{{ form.quotation_comment.value }}</p>
+                <br>
+                <textarea v-model="form.quotation_comment.value" placeholder="Agregar un comentario">
+                </textarea>
+                 <b-button-group class="col-sm-12">
+                <b-button @click="updateEstadoInterno" variant="dark" size="sm">Editar</b-button>
+              
+            </b-button-group>
+          </b-col>
+        </b-row>
+    </b-modal>
+  </div>
 </div>
 </template>
 
@@ -253,6 +278,7 @@
 <script>
 // @ is an alias to /src
 import { mapState, mapActions } from 'vuex'
+import { BasicSelect } from 'vue-search-select'
 import { ModelSelect } from 'vue-search-select'
 import { downloadPDFBase64 } from './../util/pdfHelper'
 import router from './../router'
@@ -292,11 +318,31 @@ export default {
             'setCotizacion',
             'cambiaEstadoInterno'
         ]),  
+        async estadoInterno(item) 
+        {
+            this.form.id.value =item
+            this.$refs['my-modal'].show()
+        },
+        async updateEstadoInterno() 
+        {
+            const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            payload.quotation_comment = this.form.quotation_comment.value
+            payload.quotation_state_id = this.form.quotation_state_id.value
+            payload.id = this.form.id.value
+            await this.cambiaEstadoInterno(payload)
+            await this.search()
+        },
+        async changeCotizacionAll(id)
+        {
+            this.form.quotation_state_id.value = id.value
+            this.form.quotation_state_id.text = id.text
+            console.log("ID:::::::::", this.form.quotation_state_id.value);
+        },
         async nuevaVersion(item)
         {  
 
-            console.log('Ver historico')
-            console.log('item:: ', item)
 
             const payload = {}
             payload.loading = this.$loading
@@ -446,15 +492,7 @@ export default {
 
             
         },
-        async estadoInterno(id){
-            console.log("estado interno", id);
-            const payload = {}
-            payload.loading = this.$loading
-            payload.toast = this.$toast
-            payload.id = id       
-            await this.cambiaEstadoInterno(payload)
 
-        }
     },
     data: function(){
       return {
@@ -504,12 +542,20 @@ export default {
             {  is_select: 'state_id', active: false, fil: true, key: 'state_id',  label:'Estado', class: 'text-center'},
             {  is_select: false, active: false, fil: false, key: 'acciones',  label:'Acciones', class: 'text-center'}
         ],
+        form: { 
+        quotation_comment: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        quotation_state_id: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        id: { text: null, value: null, isError: false, error: null, class: "select-default" },
+       
+      },
         filter: null,
         filterOn: [],         
         }
+        
     },
     components: {
       ModelSelect
+      ,BasicSelect
     },
     created(){
     }
