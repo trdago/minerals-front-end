@@ -86,18 +86,48 @@
 
           </b-col>
           <b-col>
-           
+            <b-form-group
+            v-if="empresas.length == 0"
+            label-size="sm" 
+            label="Si el Destinatario no existe, puede también Crear nuevo Destinatario"
+              >
+            <b-button :disabled="!form.cliente.value" @click="newDestinatario"  variant="pdarwin" class="" size="sm">Crear nuevo Destinatario</b-button>
 
-              <b-form-group
-              label-size="sm"
-              description="N° Cotización"
-              label="N° Cotización"
-              label-for="input-1">
-              <b-form-input size="sm"  id="input-1" v-model="form.cotizacion.value"   trim></b-form-input>
             </b-form-group>
-          
+
+
           </b-col>
+
         </b-row> 
+        <b-row>
+          <b-col>
+           <b-form-group
+           label-size="sm"
+           description="N° Cotización"
+           label="N° Cotización"
+           label-for="input-1">
+           <b-form-input size="sm"  id="input-1" v-model="form.cotizacion.value"   trim></b-form-input>
+         </b-form-group>
+       
+          </b-col>
+          <b-col>
+            <b-form-group
+           label-size="sm"
+           label="Pago previo"
+           label-for="input-1">
+          <!-- <b-form-input size="sm"  id="input-1" v-model="form.cotizacion.value"   trim>
+          </b-form-input> -->
+            <input type="radio" id="one" value="One" />
+            <label for="one">Si Notificar pago</label>
+
+            <input type="radio" id="two" value="Two" />
+            <label for="two">No Notificar</label>
+         </b-form-group>
+
+
+                  
+          </b-col>
+        </b-row>
       </b-card>
     </b-card-group>
     <b-card-group class="mt-1" deck>
@@ -279,7 +309,23 @@
         Crear cotización</b-button>
       </b-col>
     </b-row>
- 
+    <b-modal ref="my-modal" size="lg" hide-footer title="crear nuevo destinatario">
+      <b-row class=""> 
+          <b-col sm="12">
+
+              <span>Nombre</span>
+              <input type="text">
+              <span>Telefono</span>
+              <input type="text">
+              <span>Correo</span>
+              <input type="text">
+              <b-button-group class="col-sm-12">
+              <b-button @click="updateEstadoInterno" variant="dark" size="sm">Guardar</b-button>
+              
+            </b-button-group>
+          </b-col>
+        </b-row>
+    </b-modal>
   </div>
 </template>
 
@@ -500,6 +546,10 @@ export default {
       
 
          
+    },
+    async newDestinatario(){
+      // this.form.id.value =item
+      this.$refs['my-modal'].show()
     }
   },
   validations :{   

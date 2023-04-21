@@ -46,6 +46,14 @@ const mutations = {
     {
         state.tipos_ensayos = payload
     },
+    SET_TIPOS_UNIDAD(state, payload)
+    {
+        state.tipos_unidades = payload
+    },
+    SET_TIPOS_ELEMENTO(state, payload)
+    {
+        state.tipos_elementos = payload
+    },
     SET_TIPOS_MUESTRA(state, payload)
     {
         state.tipos_muestras = payload
@@ -235,6 +243,46 @@ const actions = {
             
 
             await commit('SET_TIPOS_ENSAYO', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los tipos de ensayos")
+            loading.hide()
+            console.error('Error al buscar los tipos de ensayos:: ', error) 
+        } 
+    },
+    async getElementos({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post('/api/herramientas/gettool', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los tipos de ensayos'}
+            
+
+            await commit('SET_TIPOS_ELEMENTO', data.data)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al buscar los tipos de ensayos")
+            loading.hide()
+            console.error('Error al buscar los tipos de ensayos:: ', error) 
+        } 
+    },
+    async getUnidades({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try {
+
+            const { data } = await axios.post('/api/herramientas/gettool', payload)
+
+            if(!data.ok) throw { message: 'No se logro consultar por los tipos de ensayos'}
+            
+
+            await commit('SET_TIPOS_UNIDAD', data.data)
 
             loading.hide()
         } catch (error) {
@@ -611,6 +659,18 @@ const getters= {
         if(!state.tipos_digestiones) return []
 
         return state.tipos_digestiones.map(item => ({ value: item.id, text: item.name }))
+    },
+    elementosFormat: state => {
+
+        if(!state.tipos_elementos) return []
+
+        return state.tipos_elementos.map(item => ({ value: item.id, text: item.name }))
+    },
+    unidadesFormat: state => {
+
+        if(!state.tipos_unidades) return []
+        console.log("aadghasd", state);
+        return state.tipos_unidades.map(item => ({ value: item.id, text: item.description + ' ('+ item.name +')' }))
     },
     tecnicasFormat: state => {
 

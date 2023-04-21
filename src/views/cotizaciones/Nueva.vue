@@ -25,7 +25,7 @@
                   
                 </tr>
                 <tr>
-                  <td class="text-right">Nombre</td> <td class="text-left">{{ cliente.name}}</td>
+                  <td class="text-right">Nombre</td> <td class="text-left">{{ cliente.name }}</td>
                   
                 </tr>
                 <tr>
@@ -41,6 +41,13 @@
                 <tr>
                   <td class="text-right">Expiración</td> <td class="text-left">{{ new Date(cotiza.expiration_date) |   dateFormat('YYYY-MM-DD') }}</td>
                 </tr>
+                <!-- <tr>
+                  <td class="text-right">Pago previo</td> <td >
+                        <input type="radio" id="uno" value="Uno" v-model="picked"><label for="uno">Si</label>
+                        <input type="radio" id="Dos" value="Dos" v-model="picked"><label for="Dos">No</label>
+                        <span>Eligió: {{ picked }}</span>
+                  </td>
+                </tr> -->
               </tbody>
             </table>
         
@@ -55,6 +62,42 @@
         header-bg-variant="darwin"
         header="Servicios seleccionado en estado temporal"
         header-tag="header"> 
+        <b-row> 
+          <b-col>
+
+             <b-form-group 
+              label-size="sm"
+              description="Elemento quimico"
+              label="Tipo de elemento"
+              label-for="input-1">
+            <basic-select
+                  :selectedOption="form.tipo_elemento"
+                  @select="changeElemento"
+                  size="sm"  
+                  :options="elementosFormat"
+                  placeholder="Seleccione elemento quimico">
+              </basic-select> 
+             </b-form-group>
+
+          </b-col>
+          <b-col>
+              <b-form-group 
+              label-size="sm"
+              description="Unidad"
+              label="Tipo de unidad"
+              label-for="input-1">
+              <basic-select
+                  :selectedOption="form.tipo_unidad"
+                  @select="changeUnidad"
+                  size="sm"  
+                  :options="unidadesFormat"
+                  placeholder="seleccione unidad">
+              </basic-select> 
+             </b-form-group>
+             
+
+          </b-col>
+        </b-row>
 
         <b-row> 
           <b-col>
@@ -331,7 +374,7 @@ export default {
   name: 'CotizacionesNewDosView',
   computed:{
     ...mapState('cotizaciones', ['cotiza', 'servicios', 'servicios_agregados', 'servicios_elegidos', 'stringMoneda']),
-    ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat', 'serviciosFormat', 'allCotizacionesFormat']), 
+    ...mapGetters('cotizaciones', [ 'ensayosFormat', 'muestrasFormat', 'digestionesFormat', 'tecnicasFormat', 'serviciosFormat', 'allCotizacionesFormat', 'elementosFormat','unidadesFormat']), 
     ...mapState('clientes', ['cliente'])
   },
   components: {
@@ -375,6 +418,24 @@ export default {
           offset :0,
           limit :20
        }) 
+       this.getElementos(
+       {
+          loading: this.$loading,
+          toast : this.$toast,
+          active : "1",
+          tipo : "elementos_quimicos",
+          offset :0,
+          limit :20
+       })
+       this.getUnidades(
+       {
+          loading: this.$loading,
+          toast : this.$toast,
+          active : "1",
+          tipo : "unidades",
+          offset :0,
+          limit :20
+       })  
 
 
       
@@ -388,6 +449,8 @@ export default {
       'getTipoDigestion', 
       'getTipoTecnica', 
       'getServicios', 
+      'getElementos',
+      'getUnidades',
       'setServicios', 
       'setServiciosAll', 
       'deleteServiceAgregado', 
@@ -496,7 +559,21 @@ export default {
     {
       this.form.servicio.value = item.value 
       this.form.servicio.text = item.text 
+      await this.changeServicios()
+    },
+    async changeUnidad(item)
+    {
+      // console.log("ITEM UN::::",item);
+      this.form.tipo_unidad.value = item.value 
+      this.form.tipo_unidad.text = item.text 
+      await this.changeServicios()
 
+    },
+    async changeElemento(item)
+    {
+       this.form.tipo_elemento.value = item.value 
+      this.form.tipo_elemento.text = item.text 
+      await this.changeServicios()
     },
     async changeServicios()
     {
@@ -509,12 +586,12 @@ export default {
           assay_type_id : this.form.tipo_ensayo.value || null,
           sample_type_id : this.form.tipo_muestra.value || null,
           digestion_id : this.form.tipo_digestion.value || null,
-          technique_id : this.form.tipo_tecnica.value || null 
-       }) 
+          technique_id : this.form.tipo_tecnica.value || null ,
+          unit_id : this.form.tipo_unidad.value || null,
+          chemical_element_id : this.form.tipo_elemento.value || null
+        }) 
 
     },
-    
-  
     async agregarServicios()
     {  
       await this.setServicios(
@@ -575,6 +652,8 @@ export default {
             {  is_select: 'Técnica', active: false, fil: true, key: 'technique_name', label: 'Técnica', class: 'text-center'},
             {  is_select: 'Muestra', active: false, fil: true, key: 'sample_type_name', label: 'Muestra', class: 'text-center'},
             {  is_select: 'Digestión', active: false, fil: true, key: 'digestion_name', label: 'Digestión', class: 'text-center'},
+            // {  is_select: 'Unidad', active: false, fil: true, key: 'digestion_name', label: 'Digestión', class: 'text-center'},
+            // {  is_select: 'Elemento', active: false, fil: true, key: 'digestion_name', label: 'Digestión', class: 'text-center'},
             {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor', class: 'text-center'} 
       ],
       form: { 
@@ -582,9 +661,10 @@ export default {
         tipo_muestra: { text: null, value: null, isError: false, error: null, class: "select-default" },
         tipo_digestion: { text: null, value: null, isError: false, error: null, class: "select-default" },
         tipo_tecnica: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_unidad: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        tipo_elemento: { text: null, value: null, isError: false, error: null, class: "select-default" },
         servicio: { text: null, value: null, isError: false, error: null, class: "select-default" },
-        cotizacion_all: { text: null, value: null, isError: false, error: null, class: "select-default" },
-
+        cotizacion_all: { text: null, value: null, isError: false, error: null, class: "select-default" }
       }
      
     }
