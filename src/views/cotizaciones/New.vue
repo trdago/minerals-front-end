@@ -301,22 +301,52 @@
       </b-col>
     </b-row>
     <b-modal ref="my-modal" size="lg" hide-footer title="crear nuevo destinatario">
-      <b-row class=""> 
-          <b-col sm="12">
 
-              <span>Nombre</span>
-              <input v-model="form.name.value" placeholder="Agregar Nombres y apellidos">
-              <span>Telefono</span>
-              <input v-model="form.telefono.value" placeholder="Agregar telefono">
-              <span>Correo</span>
-              <input v-model="form.mail.value" placeholder="Agregar Correo electronico">
-              <b-button-group class="col-sm-12">
-              <b-button @click="crearDetinatario" variant="dark" size="sm">Guardar</b-button>
-              
-            </b-button-group>
-          </b-col>
-        </b-row>
-    </b-modal>
+<b-row>
+    <b-col sm="6">
+        <b-form-group 
+        label-size="sm"
+        description="Nombre"
+        label="Nombre"
+        label-for="nombre">
+        <b-form-input :class="{ 'is-invalid': $v.form.name.value.$invalid }"  size="sm" id="input-1" v-model="form.name.value"  trim></b-form-input>
+
+      </b-form-group> 
+
+    </b-col> 
+    <b-col sm="6">
+      <b-form-group 
+        label-size="sm"
+        description="Telefono"
+        label="Telefono"
+        label-for="Telefono">
+        <b-form-input :class="{ 'is-invalid': $v.form.telefono.value.$invalid }"  size="sm" id="input-1" v-model="form.telefono.value"  trim></b-form-input>
+
+      </b-form-group>  
+
+    </b-col> 
+
+  </b-row>
+<b-row>
+    <b-col sm="6">
+        <b-form-group 
+        label-size="sm"
+        description="Correo"
+        label="Correo"
+        label-for="nombre">
+        <b-form-input :class="{ 'is-invalid': $v.form.mail.value.$invalid }"  size="sm" id="input-1" v-model="form.mail.value"  trim></b-form-input>
+
+      </b-form-group> 
+
+    </b-col>  
+
+  </b-row>  
+  <b-row>
+    <b-col sm="12">
+      <b-button @click="CrearNewDestinatario()" variant="dark" size="sm">Guardar</b-button>
+    </b-col>
+  </b-row>
+</b-modal>
   </div>
 </template>
 
@@ -554,6 +584,7 @@ export default {
       payload.mail= this.form.mail.value,
       payload.name=this.form.name.value
       payload.telefono = this.form.telefono.value
+      payload.modulo = 'cotizaciones'
 
       const destinatario = await this.crearDestinatario(payload)
       console.log("destina", destinatario);
@@ -569,6 +600,9 @@ export default {
           destinatario : { value: { required } }, 
           proyecto : { value: { required } }, 
           especificaciones : { value: { required }}, 
+          mail : { value: { required }}, 
+          name : { value: { required }}, 
+          telefono : { value: { required }}, 
         }
   }
   ,data(){
