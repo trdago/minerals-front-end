@@ -72,7 +72,6 @@
 
         <b-row>
           <b-col>
-        
             <b-form-group
               label-size="sm"
               description="Destinatario"
@@ -115,17 +114,9 @@
            label-size="sm"
            label="Pago previo"
            label-for="input-1">
-          <!-- <b-form-input size="sm"  id="input-1" v-model="form.cotizacion.value"   trim>
-          </b-form-input> -->
-            <input type="radio" id="one" value="One" />
-            <label for="one">Si Notificar pago</label>
-
-            <input type="radio" id="two" value="Two" />
-            <label for="two">No Notificar</label>
+            <b-form-radio name="radio-size" size="sm">SÍ</b-form-radio>
+            <b-form-radio name="radio-size" size="sm">NO</b-form-radio>
          </b-form-group>
-
-
-                  
           </b-col>
         </b-row>
       </b-card>
@@ -314,13 +305,13 @@
           <b-col sm="12">
 
               <span>Nombre</span>
-              <input type="text">
+              <input v-model="form.name.value" placeholder="Agregar Nombres y apellidos">
               <span>Telefono</span>
-              <input type="text">
+              <input v-model="form.telefono.value" placeholder="Agregar telefono">
               <span>Correo</span>
-              <input type="text">
+              <input v-model="form.mail.value" placeholder="Agregar Correo electronico">
               <b-button-group class="col-sm-12">
-              <b-button @click="updateEstadoInterno" variant="dark" size="sm">Guardar</b-button>
+              <b-button @click="crearDetinatario" variant="dark" size="sm">Guardar</b-button>
               
             </b-button-group>
           </b-col>
@@ -415,7 +406,7 @@ export default {
     ...mapActions('monedas', ['getAllMonedas']),
     ...mapActions('clientes', ['getClientes', 'validaCliente']), 
     ...mapActions('proyectos', ['getProyectos']), 
-    ...mapActions('cotizaciones', ['searchCondiciones', 'crearProyecto', 'crearCotizacion', 'setModena']), 
+    ...mapActions('cotizaciones', ['searchCondiciones', 'crearProyecto', 'crearCotizacion', 'setModena', 'crearDestinatario']), 
 
     async newProyecto()
     {
@@ -549,7 +540,23 @@ export default {
     },
     async newDestinatario(){
       // this.form.id.value =item
+      console.log("destinatario", this.form.destinatario);
       this.$refs['my-modal'].show()
+
+
+    },
+    async CrearNewDestinatario(){
+      this.loading.hide()
+      const payload = {}
+      payload.loading = this.$loading
+      payload.toast = this.$toast
+      payload.company_id = this.form.cliente.value
+      payload.mail= this.form.mail.value,
+      payload.name=this.form.name.value
+      payload.telefono = this.form.telefono.value
+
+      const destinatario = await this.crearDestinatario(payload)
+      console.log("destina", destinatario);
     }
   },
   validations :{   
@@ -583,6 +590,10 @@ export default {
         desde: { text: null, value: null, isError: false, error: null, class: "select-default" },
         hasta: { text: null, value: null, isError: false, error: null, class: "select-default" },
         cotizacion: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        mail: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        name: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        telefono: { text: null, value: null, isError: false, error: null, class: "select-default" },
+        pago_previo: { text: null, value: null, isError: false, error: null, class: "select-default" },      
 
       }
       ,customToolbar: [
