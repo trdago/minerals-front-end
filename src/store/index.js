@@ -7,6 +7,7 @@ import clientes from './modules/clientes'
 import monedas from './modules/monedas'
 import icp from './modules/icp'
 import proyectos from './modules/proyectos'
+import destinatarios from './modules/destinatarios'
 
 
 const modules = {
@@ -15,7 +16,8 @@ const modules = {
   monedas,
   icp,
   clientes,
-  proyectos
+  proyectos,
+  destinatarios
 }
 Vue.use(Vuex)
 

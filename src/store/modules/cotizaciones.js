@@ -54,10 +54,7 @@ const mutations = {
     {
         state.tipos_elementos = payload
     },
-    SET_DESTINATARIOS(state, payload)
-    {
-        state.destinatarios = payload
-    },
+ 
     SET_TIPOS_MUESTRA(state, payload)
     {
         state.tipos_muestras = payload
@@ -295,26 +292,7 @@ const actions = {
             console.error('Error al buscar las unidades:: ', error) 
         } 
     },
-    async getDestinatarios({commit}, payload) 
-    {   
-        let loading = payload.loading.show()
-
-        try {
-
-            const { data } = await axios.post('/api/quotations/destinatarios', payload)
-
-            if(!data.ok) throw { message: 'No se logro consultar por los destinatarios'}
-            
-
-            await commit('SET_DESTINATARIOS', data.data)
-
-            loading.hide()
-        } catch (error) {
-            payload.toast.error("Error al buscar los destinatarios")
-            loading.hide()
-            console.error('Error al buscar los destinatarios:: ', error) 
-        } 
-    },
+  
     async getTipoMuestra({commit}, payload) 
     {   
         let loading = payload.loading.show()
@@ -498,26 +476,7 @@ const actions = {
             console.error('Error No se logro crear el proyecto: ', error) 
         }
     },
-    async crearDestinatario(state, payload) 
-    {   
-        console.log('crear Destinatario', payload)
-        let loading = payload.loading.show()
 
-        try {
-
-            const { data } =  await axios.post('/api/quotations/destinatario/crear', payload)
-
-            if(!data.ok) throw { message: 'No se logro  crear destinatario'}
-
-            loading.hide()
-            return data.data[0]
-
-        } catch (error) {
-            payload.toast.error("Error No se logro crear destinatario")
-            loading.hide()
-            console.error('Error No se logro crear destinatario: ', error) 
-        }
-    },
     async setCotizacion({commit}, payload) 
     {   
         let loading = payload.loading.show()

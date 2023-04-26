@@ -77,7 +77,13 @@
               description="Destinatario"
               label="Destinatario"
               label-for="input-1">
-              <b-form-input :class="{ 'is-invalid': $v.form.destinatario.value.$invalid }"  size="sm" id="input-1" v-model="form.destinatario.value"  trim></b-form-input>
+              <basic-select
+                  :selectedOption="form.destinatario"
+                  @select="changeDestinatario"
+                  size="sm"  
+                  :options="destinatariosFormat"
+                  placeholder="Destinatario">
+              </basic-select>  
               <div class="invalid-feedback">
                 El Destinatario es requerido
               </div>
@@ -110,12 +116,15 @@
        
           </b-col>
           <b-col>
+          
             <b-form-group
-           label-size="sm"
-           label="Pago previo"
-           label-for="input-1">
-            <b-form-radio name="radio-size" size="sm">SÍ</b-form-radio>
-            <b-form-radio name="radio-size" size="sm">NO</b-form-radio>
+
+            :class="{ 'is-invalid': $v.form.pago_previo.$invalid }"  
+            label-size="sm"
+            label="Pago previo"
+            label-for="input-1"> 
+            <b-form-radio v-model="form.pago_previo.value" value="1" name="radio-size" size="sm">SÍ</b-form-radio>
+            <b-form-radio v-model="form.pago_previo.value" value="0"  name="radio-size" size="sm">NO</b-form-radio>
          </b-form-group>
           </b-col>
         </b-row>
@@ -292,7 +301,7 @@
       </b-card>
     </b-card-group>
     <b-row class="mt-1 mb-4">
-      <b-col>
+      <b-col> 
         <b-button 
         :disabled="$v.form.$invalid"
         @click="crear()"
@@ -309,7 +318,7 @@
         description="Nombre"
         label="Nombre"
         label-for="nombre">
-        <b-form-input :class="{ 'is-invalid': $v.form.name.value.$invalid }"  size="sm" id="input-1" v-model="form.name.value"  trim></b-form-input>
+        <b-form-input :class="{ 'is-invalid': $v.form2.name.value.$invalid }"  size="sm" id="input-1" v-model="form.name.value"  trim></b-form-input>
 
       </b-form-group> 
 
@@ -320,7 +329,7 @@
         description="Telefono"
         label="Telefono"
         label-for="Telefono">
-        <b-form-input :class="{ 'is-invalid': $v.form.telefono.value.$invalid }"  size="sm" id="input-1" v-model="form.telefono.value"  trim></b-form-input>
+        <b-form-input :class="{ 'is-invalid': $v.form2.telefono.value.$invalid }"  size="sm" id="input-1" v-model="form.telefono.value"  trim></b-form-input>
 
       </b-form-group>  
 
@@ -329,12 +338,12 @@
   </b-row>
 <b-row>
     <b-col sm="6">
-        <b-form-group 
+        <b-form-group  
         label-size="sm"
         description="Correo"
         label="Correo"
         label-for="nombre">
-        <b-form-input :class="{ 'is-invalid': $v.form.mail.value.$invalid }"  size="sm" id="input-1" v-model="form.mail.value"  trim></b-form-input>
+        <b-form-input :class="{ 'is-invalid': $v.form2.mail.value.$invalid }"  size="sm" id="input-1" v-model="form.mail.value"  trim></b-form-input>
 
       </b-form-group> 
 
@@ -343,6 +352,7 @@
   </b-row>  
   <b-row>
     <b-col sm="12">
+   
       <b-button @click="CrearNewDestinatario()" variant="dark" size="sm">Guardar</b-button>
     </b-col>
   </b-row>
@@ -379,6 +389,8 @@ export default {
     ...mapGetters('clientes', ['clientesFormat', 'proyectosFormat']), 
     ...mapGetters('cotizaciones', ['condicionesFormat']), 
     ...mapGetters('monedas', ['monedasFormat']), 
+    ...mapGetters('monedas', ['monedasFormat']), 
+    ...mapGetters('destinatarios', ['destinatariosFormat']), 
 
   },
   components: {
@@ -436,8 +448,8 @@ export default {
     ...mapActions('monedas', ['getAllMonedas']),
     ...mapActions('clientes', ['getClientes', 'validaCliente']), 
     ...mapActions('proyectos', ['getProyectos']), 
-    ...mapActions('cotizaciones', ['searchCondiciones', 'crearProyecto', 'crearCotizacion', 'setModena', 'crearDestinatario']), 
-
+    ...mapActions('destinatarios', ['getDestinatarios', 'crearDestinatario']), 
+    ...mapActions('cotizaciones', ['searchCondiciones', 'crearProyecto', 'crearCotizacion', 'setModena']), 
     async newProyecto()
     {
         console.log('crear proyecto')
@@ -504,6 +516,18 @@ export default {
       this.form.cliente_nombre.value = cliente.name
       this.form.cliente_active.value = cliente.active ? 'Activo':'Desactivado'
       this.form.cotizacion.value = cliente.quotation_number 
+
+      console.log('cliente:: ', cliente)
+
+
+      await this.getDestinatarios(
+        {
+          loading     : this.$loading,
+          toast       : this.$toast,
+          company_id  : cliente.id,
+          modulo      : 'cotizaciones' 
+        })
+    
     },
     async changeCliente(item)
     {
@@ -518,6 +542,12 @@ export default {
       this.form.cliente_rut.value = format(`${ cliente.rut }${ cliente.dv }`)
 
       console.log('form:: ', this.form)
+    },
+    async changeDestinatario(item)
+    {
+
+      this.form.destinatario.value = item.value
+      this.form.destinatario.text = item.text 
     },
     async changeProyecto(item)
     {
@@ -551,7 +581,7 @@ export default {
       payload.company_id = this.form.cliente.value 
       payload.estimated_days = this.form.tiempo.value
       payload.proyect_id = this.form.proyecto.value
-      payload.destinatario = this.form.destinatario.value
+      payload.destinatario = this.form.destinatario.text
 
       payload.currency_id = this.form.moneda.value
       payload.quotation_state_id = 5
@@ -561,6 +591,7 @@ export default {
       payload.start_date = this.form.desde.value
       payload.specific_condition = this.form.especificaciones.value
       payload.quotation_number = this.form.cotizacion.value
+      payload.pago_previo = this.form.pago_previo.value
 
       await this.crearCotizacion(payload) 
 
@@ -570,13 +601,13 @@ export default {
     },
     async newDestinatario(){
       // this.form.id.value =item
-      console.log("destinatario", this.form.destinatario);
+      console.log("destinatario", this.form.destinatario)
       this.$refs['my-modal'].show()
 
 
     },
     async CrearNewDestinatario(){
-      this.loading.hide()
+
       const payload = {}
       payload.loading = this.$loading
       payload.toast = this.$toast
@@ -587,7 +618,21 @@ export default {
       payload.modulo = 'cotizaciones'
 
       const destinatario = await this.crearDestinatario(payload)
-      console.log("destina", destinatario);
+  
+
+      await this.getDestinatarios(
+      {
+        loading     : this.$loading,
+        toast       : this.$toast,
+        company_id  : this.form.cliente.value,
+        modulo      : 'cotizaciones' 
+      })
+
+      //this.form.destinatario.text =
+      console.log(destinatario)
+
+      this.$refs['my-modal'].hide() 
+ 
     }
   },
   validations :{   
@@ -600,6 +645,9 @@ export default {
           destinatario : { value: { required } }, 
           proyecto : { value: { required } }, 
           especificaciones : { value: { required }}, 
+          pago_previo : { value: { required }}, 
+        },
+        form2: { 
           mail : { value: { required }}, 
           name : { value: { required }}, 
           telefono : { value: { required }}, 
