@@ -44,7 +44,7 @@ export default {
   },
   components: {
   }
-  ,data(){
+ ,data(){
     return {
       toastCount: 0
     }

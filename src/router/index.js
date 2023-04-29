@@ -126,12 +126,19 @@ const routes = [
     name: 'construccion',
     component: ConstruccionView
   },
+  { path: '/docs'  } 
+    
+  
 ]
+
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
 })
+
+console.log("reou;;;;;",router.base);
+
 
 export default router

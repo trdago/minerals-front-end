@@ -17,6 +17,7 @@ const state = {
     tipos_digestiones: [],
     tipos_tecnicas: [],
     all_cotizaciones: [],
+    estado_cotizaciones: [],
     stringMoneda:' ',
     pageOptions: [
         {value: 5, text: '5'},
@@ -102,7 +103,11 @@ const mutations = {
     SET_ALL_COTIZACIONES(state, payload)
     { 
         state.all_cotizaciones = payload
-    } 
+    },
+    SET_ESTADO_COTIZACIONES(state, payload)
+    {
+        state.estado_cotizaciones = payload.data
+    }
 
 }
 
@@ -292,7 +297,6 @@ const actions = {
             console.error('Error al buscar las unidades:: ', error) 
         } 
     },
-  
     async getTipoMuestra({commit}, payload) 
     {   
         let loading = payload.loading.show()
@@ -476,7 +480,6 @@ const actions = {
             console.error('Error No se logro crear el proyecto: ', error) 
         }
     },
-
     async setCotizacion({commit}, payload) 
     {   
         let loading = payload.loading.show()
@@ -634,7 +637,22 @@ const actions = {
             loading.hide()
             console.error('Error al buscar las cotizaciones:: ', error) 
         }    
+    },
+    async getEstadosCotizaciones({commit}, payload){
+        let loading = payload.loading.show()
+        try {
+            const { data } =  await axios.post('/api/quotations/quo-status', payload)
+            if(!data.ok) throw { message: 'No se logro consultar por el estado de  las cotizaciones'}
+            await commit('SET_ESTADO_COTIZACIONES', data)
+            loading.hide()
+
+        } catch (error) {
+            payload.toast.error("Error al buscar el estado de  las cotizaciones")
+            loading.hide()
+            console.error('Error al buscar el estado de  las cotizaciones:: ', error) 
+        }  
     }
+
 
 }
 

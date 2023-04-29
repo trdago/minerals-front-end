@@ -1,37 +1,40 @@
 <template>
 <div>
   
-    <b-row>
-    <b-col sm="12">
-        <b-row> 
-                <b-col sm="2" class="my-3 pf-0 text-start">
-                <b-form-group
-                label="por página"
-                label-for="per-page-select"
-                label-cols-sm="7" 
-                label-align-sm="right"
-                label-size="sm"
-                class="mb-0 pl-0"
-                >
-                <model-select 
-                    id="per-page-select"
-                    :options="pageOptions"
-                    size="sm"
-                    v-model="porPagina"
-                    placeholder="select item">
-                </model-select> 
-                </b-form-group>
-            </b-col>
-            <b-col sm="10" class=" my-4 text-end">
-                 <b-button @click="search()" variant="pdarwin">
-                     <b-icon icon="search"></b-icon>
-                     Buscar
-                     </b-button>
+        <b-row>
+            <b-col sm="12">
+                <b-row> 
+                    <b-col sm="2" class="my-3 pf-0 text-start">
+                        <b-form-group
+                        label="por página"
+                        label-for="per-page-select"
+                        label-cols-sm="7" 
+                        label-align-sm="right"
+                        label-size="sm"
+                        class="mb-0 pl-0"
+                        >
+                        <model-select 
+                            id="per-page-select"
+                            :options="pageOptions"
+                            size="sm"
+                            v-model="porPagina"
+                            placeholder="select item">
+                        </model-select> 
+                        </b-form-group>
+                    </b-col>
+                    <b-col sm="5" class=" my-4 text-end">
+
+                    </b-col>
+                    <b-col sm="5" class=" my-4 text-end">
+                        <b-button @click="search()" variant="pdarwin">
+                            <b-icon icon="search"></b-icon>
+                            Buscar
+                            </b-button>
+
+                    </b-col>
+                </b-row> 
 
             </b-col>
-        </b-row> 
-
-    </b-col>
         </b-row>
         <b-row>
                 <b-table
@@ -49,7 +52,7 @@
                 :bordered="true"
                 > 
 
-              <template slot="top-row" slot-scope="{ fields }">
+            <template slot="top-row" slot-scope="{ fields }">
                 <td v-for="field in fields" :key="field.key">   
                     <b-input-group v-if="field.is_select == 'quotation_state' && field.fil">
                         <model-select 
@@ -59,7 +62,6 @@
                             placeholder="interno_plazo">
                         </model-select>  
                     </b-input-group>
-                
                     <b-input-group v-if="field.is_select == 'quotation_number' && field.fil">
                         <b-form-input  
                             @keyup.enter="search()"  
@@ -108,7 +110,6 @@
                         </b-button>
                         </b-input-group-append>
                     </b-input-group>
-
                     <b-input-group v-if="field.is_select == 'state_id' && field.fil">
                         <model-select 
                             size="sm"  
@@ -117,7 +118,6 @@
                             placeholder="Estado">
                         </model-select>  
                     </b-input-group>
-
                     <b-input-group v-if="field.is_select == 'active' && field.fil">
                         <model-select 
                             size="sm"  
@@ -126,7 +126,6 @@
                             placeholder="Vigencia">
                         </model-select>  
                     </b-input-group>
-
                     <b-input-group v-if="field.is_select == 'expiration_date' && field.fil">
                         <model-select 
                             size="sm"  
@@ -140,11 +139,22 @@
             </template>
 
              <template #cell(quotation_state)="row">  
-                   <b-badge v-if="row.item.quotation_state == 'Pendiente'" class="bg-secondary" variant="info">{{ row.item.quotation_state }}</b-badge>  
-                   <b-badge v-if="row.item.quotation_state == 'Por adjudicar'" class="bg-primary" variant="info">{{ row.item.quotation_state }}</b-badge>  
-                   <b-badge v-if="row.item.quotation_state == 'Ganada'" class="bg-success" variant="info">{{ row.item.quotation_state }}</b-badge>  
+                <b-row>
+
+                    <b-badge v-if="row.item.quotation_state == 'Pendiente'" class="bg-secondary" variant="info">{{ row.item.quotation_state }}</b-badge>  
+                    <b-badge v-if="row.item.quotation_state == 'Por adjudicar'" class="bg-primary" variant="info">{{ row.item.quotation_state }}</b-badge>  
+                    <b-badge v-if="row.item.quotation_state == 'Ganada'" class="bg-success" variant="info">{{ row.item.quotation_state }}</b-badge>  
                    <b-badge v-if="row.item.quotation_state == 'Perdida'" class="bg-danger" variant="info">{{ row.item.quotation_state }}</b-badge>  
                    <b-badge v-if="row.item.quotation_state == 'Negociación'" class="bg-warning" variant="info">{{ row.item.quotation_state }}</b-badge>  
+                </b-row>
+                <b-row>
+                    <b-badge class="text-darwin">
+                        <small>
+                            <b-icon icon="calendar2-date-fill"></b-icon>
+                            {{ row.item.estimated_days+' días' }}
+                        </small>
+                    </b-badge>  
+                </b-row>
              </template>
              <template #cell(quotation_number)="row">  
                  <b-row>
@@ -161,10 +171,21 @@
                  </b-row>
                  
              </template>
-             <template #cell(company_name)="row">   
-                 <span class="text-darwin">
-                           {{ row.item.company_name }}
-                 </span>
+             <template #cell(company_name)="row">  
+                <b-row>
+
+                    <span class="text-darwin">
+                        {{ row.item.company_name }}
+                    </span>
+                </b-row>
+                <b-row>
+                    <b-badge class="text-darwin">
+                        <small>
+                            <b-icon icon="envelope"></b-icon>
+                            {{ 'ESTADO DE NOTIFICACIÓN : ' + 'Enviada' }}
+                        </small>
+                    </b-badge>  
+                </b-row> 
              </template>
              <template #cell(project)="row">   
                  <span class="text-darwin">
@@ -211,7 +232,6 @@
                     </b-dropdown>
                 </b-button-group>
              </template>
-
             <template #empty>
                 <div class="text-center my-2"> 
                     No se encontraron resultados
@@ -223,7 +243,7 @@
                 <b-spinner variant="primary" label="Spinning"></b-spinner> 
                 </div>
             </template>
-        </b-table>
+                </b-table>
         </b-row>
         <b-row class="mb-4">
             <b-col cols="4">
@@ -290,7 +310,9 @@ export default {
     ...mapState('cotizaciones', [
         'totalRows',  
         'cotizaciones', 
-        'pageOptions'
+        'pageOptions',
+        'estado_cotizaciones'
+
         ])
     },
     watch: {
@@ -316,7 +338,8 @@ export default {
             'getHistorico',
             'cotizacionAccion',
             'setCotizacion',
-            'cambiaEstadoInterno'
+            'cambiaEstadoInterno',
+            'getEstadosCotizaciones'
         ]),  
         async estadoInterno(item) 
         {
@@ -338,7 +361,6 @@ export default {
         {
             this.form.quotation_state_id.value = id.value
             this.form.quotation_state_id.text = id.text
-            console.log("ID:::::::::", this.form.quotation_state_id.value);
         },
         async nuevaVersion(item)
         {  
@@ -532,7 +554,8 @@ export default {
         loading : false, 
         isBusy: false,
         fields: [
-            {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Interno Plazo', class: 'text-center' },
+            {  is_select: 'quotation_state_id', active: false, fil: true, key: 'quotation_state', label: 'Plazo Interno', class: 'text-center' },
+            {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Correo Notificación', class: 'text-center' },
             {  is_select: 'quotation_number', active: false, fil: true, key: 'quotation_number', label: 'Cotizacion', class: 'text-center'},
             {  is_select: 'company_name', active: false, fil: true, key: 'company_name', label: 'Cliente', class: 'text-center'},
             {  is_select: false, active: false, fil: true, key: 'project', label: 'Proyecto' , class: 'text-center'},
@@ -541,6 +564,14 @@ export default {
             {  is_select: 'active', active: false, fil: true, key: 'active',  label:'Vigencia', class: 'text-center'},
             {  is_select: 'state_id', active: false, fil: true, key: 'state_id',  label:'Estado', class: 'text-center'},
             {  is_select: false, active: false, fil: false, key: 'acciones',  label:'Acciones', class: 'text-center'}
+        ],
+        indicador: [
+        {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Plazo Interno', class: 'text-center' },
+        {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Correo Notificación', class: 'text-center' },
+        {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Plazo Interno', class: 'text-center' },
+        {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Correo Notificación', class: 'text-center' },
+        {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Plazo Interno', class: 'text-center' },
+        {  is_select: 'quotation_state', active: false, fil: true, key: 'quotation_state', label: 'Correo Notificación', class: 'text-center' },
         ],
         form: { 
         quotation_comment: { text: null, value: null, isError: false, error: null, class: "select-default" },
@@ -557,7 +588,11 @@ export default {
       ModelSelect
       ,BasicSelect
     },
-    created(){
+    async created(){
+        const payload = {}
+            payload.loading = this.$loading
+            payload.toast = this.$toast
+            await this.getEstadosCotizaciones(payload)
     }
 }
 </script>

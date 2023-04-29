@@ -34,15 +34,16 @@ axios.interceptors.request.use(async function(config) {
 axios.interceptors.response.use(
     function (response) 
     { 
-        console.log('response:: ', response)
-        
+       
         if(response.data?.statusCode == 403) 
             return router.push({path: '/unauthorized'}) 
         
         if(response.data.statusCode == 401)
             return router.push({path: '/unauthorized'}) 
 
-        if (response.status === 200 || response.status === 201) 
+        if (response.status === 200 || response.status === 201)
+
+
         return Promise.resolve(response)
         
 
