@@ -646,6 +646,8 @@ const actions = {
             await commit('SET_ESTADO_COTIZACIONES', data)
             loading.hide()
 
+            return data.data
+
         } catch (error) {
             payload.toast.error("Error al buscar el estado de  las cotizaciones")
             loading.hide()

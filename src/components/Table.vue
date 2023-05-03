@@ -4,7 +4,7 @@
         <b-row>
             <b-col sm="12">
                 <b-row> 
-                    <b-col sm="2" class="my-3 pf-0 text-start">
+                    <b-col sm="1" class="my-3 pf-0 text-start">
                         <b-form-group
                         label="por página"
                         label-for="per-page-select"
@@ -22,10 +22,97 @@
                         </model-select> 
                         </b-form-group>
                     </b-col>
-                    <b-col sm="5" class=" my-4 text-end">
-
+                    <b-col sm="9" class="my-0 text-end">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="card mb-2">
+                                    <div class="card-body">
+                                        <h6 class="card-title"> 
+                                            {{ ganadas  }} Ganadas
+                                        </h6>
+                                        <div class="text-right">
+                                            <h2 class="font-weight-light mb-0">
+                                                <i class="ti-arrow-up text-success"></i>  
+                                            </h2> 
+                                        </div>
+                                        <span class="text-success">{{ ((ganadas*100)/total).toFixed(2)  }}%</span>
+                                        <b-progress animated variant="success" :value="(ganadas*100)/total"></b-progress>
+                                      
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ pendiente  }} Pendiente</h6>
+                                        <div class="text-right">
+                                            <h2 class="font-weight-light mb-0">
+                                                <i class="ti-arrow-up text-info"></i> 
+                                            </h2>
+                                        </div>
+                                        <span class="text-info">{{ ((pendiente*100)/total).toFixed(2)  }}%</span>
+                                        <b-progress animated variant="info" :value="(pendiente*100)/total"></b-progress>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h6 class="card-title">  {{ porAdjudicar  }} Por&nbsp;Adjudicar</h6>
+                                        <div class="text-right">
+                                            <h2 class="font-weight-light mb-0">
+                                                <i class="ti-arrow-up text-primary"></i>  </h2> 
+                                            </div>
+                                            <span class="text-primary">{{ ((porAdjudicar*100)/total).toFixed(2)  }}%</span>
+                                            <b-progress animated variant="primary" :value="(porAdjudicar*100)/total"></b-progress>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ perdida  }} Perdida</h6>
+                                            <div class="text-right">
+                                                <h2 class="font-weight-light mb-0">
+                                                    <i class="ti-arrow-down text-danger"></i> 
+                                                </h2>
+                                            </div>
+                                            <span class="text-danger">{{ ((perdida*100)/total).toFixed(2)  }}%</span>
+                                            <b-progress animated variant="danger" :value="(perdida*100)/total"></b-progress>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ negociacion  }} Negociación</h6>
+                                            <div class="text-right">
+                                                <h2 class="font-weight-light mb-0">
+                                                    <i class="ti-arrow-down text-danger"></i> 
+                                                </h2>
+                                            </div>
+                                            <span class="text-warning">{{  ((negociacion *100)/total).toFixed(2) }}%</span>
+                                            <b-progress animated variant="warning" :value="(negociacion*100)/total"></b-progress>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ total  }} Total</h6>
+                                            <div class="text-right">
+                                                <h2 class="font-weight-light mb-0">
+                                                    <i class="ti-arrow-down text-danger"></i> 
+                                                </h2>
+                                            </div>
+                                            <span class="text-dark">100%</span>
+                                            <b-progress animated variant="dark" :value="total"></b-progress>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                     </b-col>
-                    <b-col sm="5" class=" my-4 text-end">
+                    <b-col sm="2" class=" my-4 text-end">
                         <b-button @click="search()" variant="pdarwin">
                             <b-icon icon="search"></b-icon>
                             Buscar
@@ -139,22 +226,22 @@
             </template>
 
              <template #cell(quotation_state)="row">  
-                <b-row>
+                <b-col>
 
                     <b-badge v-if="row.item.quotation_state == 'Pendiente'" class="bg-secondary" variant="info">{{ row.item.quotation_state }}</b-badge>  
                     <b-badge v-if="row.item.quotation_state == 'Por adjudicar'" class="bg-primary" variant="info">{{ row.item.quotation_state }}</b-badge>  
                     <b-badge v-if="row.item.quotation_state == 'Ganada'" class="bg-success" variant="info">{{ row.item.quotation_state }}</b-badge>  
                    <b-badge v-if="row.item.quotation_state == 'Perdida'" class="bg-danger" variant="info">{{ row.item.quotation_state }}</b-badge>  
                    <b-badge v-if="row.item.quotation_state == 'Negociación'" class="bg-warning" variant="info">{{ row.item.quotation_state }}</b-badge>  
-                </b-row>
-                <b-row>
+                </b-col>
+                <b-col>
                     <b-badge class="text-darwin">
                         <small>
                             <b-icon icon="calendar2-date-fill"></b-icon>
                             {{ row.item.estimated_days+' días' }}
                         </small>
                     </b-badge>  
-                </b-row>
+                </b-col>
              </template>
              <template #cell(quotation_number)="row">  
                  <b-row>
@@ -307,13 +394,20 @@ import Swal from "sweetalert2"
 export default {
     name: 'TableComponent',
     computed:{
+       
     ...mapState('cotizaciones', [
         'totalRows',  
         'cotizaciones', 
         'pageOptions',
         'estado_cotizaciones'
 
-        ])
+        ]),
+        pendienteStyle() {
+        return {
+            "background-color": this.bgColor,
+            height: `${this.height}px`
+        }
+    }
     },
     watch: {
         'porPagina' : async function()
@@ -329,7 +423,22 @@ export default {
     {
         this.filters['active'] = 2
 
+        const payload = {}
+        payload.loading = this.$loading
+        payload.toast = this.$toast 
         await this.search()
+        const items = await this.getEstadosCotizaciones(payload)  
+
+        for(let item of items)
+        {
+            this.total += item.cant 
+            if(item.estado == 'Pendiente')  this.pendiente = item.cant 
+            if(item.estado == 'Ganada')  this.ganadas = item.cant 
+            if(item.estado == 'Perdida')  this.perdida = item.cant    
+            if(item.estado == 'Por adjudicar')  this.porAdjudicar = item.cant 
+            if(item.estado == 'Negociación')  this.negociacion = item.cant 
+        }
+
     },
     methods: {
         ...mapActions('cotizaciones', [
@@ -518,15 +627,21 @@ export default {
     },
     data: function(){
       return {
-          currentPage:1,
-          porPagina: 5,
-          cliente: null,
+            ganadas: 0,
+            perdida: 0,
+            porAdjudicar: 0,
+            negociacion: 0,
+            pendiente: 0,
+            total: 0,
+            currentPage:1,
+            porPagina: 5,
+            cliente: null,
           activas:[
               { value: 2, text: 'Todas'},
               { value: 0, text: 'NO'},
               { value: 1, text: 'Si'},
           ],
-          estados:[
+            estados:[
               { value: 0, text: 'Todos los estados'},
               { value: 1, text: 'Pendiente'},
               { value: 2, text: 'Aprobada'},
@@ -587,12 +702,6 @@ export default {
     components: {
       ModelSelect
       ,BasicSelect
-    },
-    async created(){
-        const payload = {}
-            payload.loading = this.$loading
-            payload.toast = this.$toast
-            await this.getEstadosCotizaciones(payload)
-    }
+    } 
 }
 </script>
