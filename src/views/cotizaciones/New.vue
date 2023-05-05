@@ -506,12 +506,16 @@ export default {
       if(!validate(this.form.cliente_rut.value)) 
         return  this.$toast.error('Rut de cliente invalido')
 
+
+
       // payload.rut= Number((this.form.cliente_rut.value).split('-')[0])
       payload.rut= clean(this.form.cliente_rut.value)
       payload.rut= payload.rut.substr(0, payload.rut.length - 1)
 
       const cliente = await this.validaCliente(payload)
 
+      this.form.destinatario.value = ''
+      this.form.destinatario.text = ''
       
       this.form.cliente_nombre.value = cliente.name
       this.form.cliente_active.value = cliente.active ? 'Activo':'Desactivado'

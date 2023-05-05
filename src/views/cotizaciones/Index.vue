@@ -53,7 +53,9 @@
           <b-button variant="link">
             <b-icon icon="printer"></b-icon>
           </b-button>
-          <b-button variant="pdarwincafe">
+          <b-button 
+            @click="$router.go(-1)"
+            variant="pdarwincafe">
             <b-icon icon="arrow-left"></b-icon>
             Volver
           </b-button>

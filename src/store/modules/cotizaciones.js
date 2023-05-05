@@ -84,13 +84,23 @@ const mutations = {
     {
         state.servicios_agregados = payload
     },
+    SET_ONE_SERVICIOS_AGREGADOS(state, payload)
+    {
+        state.servicios_agregados.push(payload)
+    },
     DELETE_SERVICIOS_AGREGADOS(state, payload)
     { 
         state.servicios_agregados = state.servicios_agregados.filter(ser => ser.id != payload.id)
     },
     ADD_SERVICIOS_ELEGIDOS(state, payload)
     { 
+        console.log('ADD_SERVICIOS_ELEGIDOS::', payload)
         state.servicios_elegidos.push(payload)
+    },
+    BACK_SERVICIOS_ELEGIDOS(state, payload)
+    { 
+        console.log('BACK_SERVICIOS_ELEGIDOS::', payload)
+        state.servicios_elegidos = state.servicios_elegidos.filter(serv => serv.id != payload.id  )
     },
     CLEAR_SERVICIOS_ELEGIDOS(state)
     { 
@@ -435,6 +445,28 @@ const actions = {
             console.error('Error al eliminar servicio agregado:: ', error) 
         } 
     },
+    async devolverServiceAgregado({commit}, payload) 
+    {   
+        let loading = payload.loading.show()
+
+        try { 
+
+            const { data } =  await axios.post('/api/quotations/anular-det', { 
+                id : payload.item.assay_id 
+            })
+
+            if(!data.ok) throw { message: 'No se logro agregar el item'}
+
+            await commit('BACK_SERVICIOS_ELEGIDOS', payload.item)
+            await commit('SET_ONE_SERVICIOS_AGREGADOS', payload.item)
+
+            loading.hide()
+        } catch (error) {
+            payload.toast.error("Error al eliminar servicio agregado")
+            loading.hide()
+            console.error('Error al eliminar servicio agregado:: ', error) 
+        } 
+    },
     async addServiceElegido({commit}, payload) 
     {   
 
@@ -445,7 +477,7 @@ const actions = {
             const { data } =  await axios.post('/api/quotations/new/detail', {
                 active : 0,
                 quotation_id : payload.quotation_id,
-                assay_id : payload.item.id,
+                assay_id : payload.item.assay_id,
                 price : payload.item.cost
             })
 
@@ -455,9 +487,9 @@ const actions = {
 
             loading.hide()
         } catch (error) {
-            payload.toast.error("Error al eliminar servicio agregado")
+            payload.toast.error("Error al agregar servicio")
             loading.hide()
-            console.error('Error al eliminar servicio agregado:: ', error) 
+            console.error('Error al agregar servicio:: ', error) 
         } 
     },
     async crearProyecto(state, payload) 
@@ -517,7 +549,13 @@ const actions = {
             console.log('NUEVA COTIZACION::::', data)
             await commit('SET_COTIZACION', data.data[0])
             await commit('SET_SERVICIOS_AGREGADOS', [])
-            await commit('CLEAR_SERVICIOS_ELEGIDOS')
+            //await commit('CLEAR_SERVICIOS_ELEGIDOS')
+
+            for(let servicio of data.data[0].analisis_asociado)
+            {
+                
+                await commit('ADD_SERVICIOS_ELEGIDOS', servicio)
+            }
 
             await route.push({name: 'cotizaciones_new_dos'})
             return data.data[0]

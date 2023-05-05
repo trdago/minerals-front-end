@@ -307,8 +307,11 @@
                  <template #cell(name)="row">  
                      {{ row.item.name }}  
                  </template> 
-           
-           
+                 <template #cell(acciones)="row">   
+                    <b-button-group size="sm">
+                        <b-button  @click="eliminarServicioDefinitivo(row.item)"  variant="danger" >Eliminar</b-button> 
+                    </b-button-group>
+                 </template>           
      
                 <template #empty>
                     <div class="text-center my-2"> 
@@ -456,7 +459,8 @@ export default {
       'deleteServiceAgregado', 
       'addServiceElegido', 
       'finalizar', 
-      'getAllCotizaciones'
+      'getAllCotizaciones',
+      'devolverServiceAgregado'
     ]),
 
     async showModal() 
@@ -496,6 +500,21 @@ export default {
             loading: this.$loading,
             toast : this.$toast,
             item 
+           
+        }) 
+
+    },  
+    async eliminarServicioDefinitivo(item)
+    {
+      
+      
+      console.log('devolver servicio', item)
+        await this.devolverServiceAgregado(
+        {
+            loading: this.$loading,
+            toast : this.$toast,
+            item,
+            quotation_id : item.quotation_id 
            
         }) 
 
@@ -644,8 +663,8 @@ export default {
             {  is_select: 'Acciones', active: false, fil: true, key: 'Acciones', label: 'Acciones', class: 'text-center'},
             {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-left'},
             {  is_select: 'description', active: false, fil: true, key: 'fases', label: 'Detalle' , class: 'text-left'}
-      ],
-      fields_elegidos: [
+          ],
+          fields_elegidos: [
             {  is_select: 'name', active: false, fil: true, key: 'name', label: 'Nombre', class: 'text-center' },
             {  is_select: 'Tipo', active: false, fil: true, key: 'assay_name', label: 'Tipo', class: 'text-center'},
             {  is_select: 'Método', active: false, fil: true, key: 'method_name', label: 'Método', class: 'text-center'},
@@ -654,7 +673,8 @@ export default {
             {  is_select: 'Digestión', active: false, fil: true, key: 'digestion_name', label: 'Digestión', class: 'text-center'},
             // {  is_select: 'Unidad', active: false, fil: true, key: 'digestion_name', label: 'Digestión', class: 'text-center'},
             // {  is_select: 'Elemento', active: false, fil: true, key: 'digestion_name', label: 'Digestión', class: 'text-center'},
-            {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor', class: 'text-center'} 
+            {  is_select: 'cost', active: false, fil: true, key: 'cost', label: 'Valor', class: 'text-center'},
+            {  is_select: 'Acciones', active: false, fil: true, key: 'Acciones', label: 'Acciones', class: 'text-center'}
       ],
       form: { 
         tipo_ensayo: { text: null, value: null, isError: false, error: null, class: "select-default" },
